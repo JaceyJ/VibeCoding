@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Roadtrip Planner</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>Roadtrip Planner</h1>
+      <p>Plan a multi-day roadtrip: map your route and discover things to do along the way.</p>
+    </header>
+
+    <main class="app-main">
+      <section class="controls">
+        <form id="planner-form">
+          <div class="form-row">
+            <label for="start">Start</label>
+            <input id="start" name="start" type="text" placeholder="e.g., San Francisco, CA" required />
+          </div>
+          <div class="form-row">
+            <label for="end">End</label>
+            <input id="end" name="end" type="text" placeholder="e.g., Seattle, WA" required />
+          </div>
+          <div class="form-row">
+            <label for="days">Days</label>
+            <input id="days" name="days" type="number" min="1" max="30" value="3" required />
+          </div>
+          <div class="form-actions">
+            <button type="submit">Plan Trip</button>
+          </div>
+        </form>
+        <div id="status" class="status" aria-live="polite"></div>
+      </section>
+
+      <section class="layout">
+        <div id="map"></div>
+        <aside id="sidebar">
+          <h2>Itinerary</h2>
+          <ol id="itinerary"></ol>
+          <h2>Things to do</h2>
+          <div id="poi-list"></div>
+        </aside>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <small>
+        Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors.
+        Routing by <a href="https://project-osrm.org/" target="_blank" rel="noopener">OSRM</a>.
+        Geocoding by <a href="https://nominatim.org/" target="_blank" rel="noopener">Nominatim</a>.
+        POIs from <a href="https://www.wikipedia.org/" target="_blank" rel="noopener">Wikipedia</a>.
+      </small>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

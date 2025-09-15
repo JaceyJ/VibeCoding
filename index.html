@@ -18,11 +18,17 @@
         <form id="planner-form">
           <div class="form-row">
             <label for="start">Start</label>
-            <input id="start" name="start" type="text" placeholder="e.g., San Francisco, CA" required />
+            <div class="autocomplete">
+              <input id="start" name="start" type="text" placeholder="e.g., San Francisco, CA" autocomplete="off" required />
+              <div id="start-suggestions" class="suggestions" role="listbox" aria-label="Start suggestions"></div>
+            </div>
           </div>
           <div class="form-row">
             <label for="end">End</label>
-            <input id="end" name="end" type="text" placeholder="e.g., Seattle, WA" required />
+            <div class="autocomplete">
+              <input id="end" name="end" type="text" placeholder="e.g., Seattle, WA" autocomplete="off" required />
+              <div id="end-suggestions" class="suggestions" role="listbox" aria-label="End suggestions"></div>
+            </div>
           </div>
           <div class="form-row">
             <label for="days">Days</label>

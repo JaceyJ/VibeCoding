@@ -12,6 +12,17 @@ const endSuggestions = document.getElementById('end-suggestions');
 const progressContainer = document.getElementById('progress-container');
 const progressFill = document.getElementById('progress-fill');
 const progressText = document.getElementById('progress-text');
+const tripOverviewEl = document.getElementById('trip-overview');
+const detailedItineraryEl = document.getElementById('detailed-itinerary');
+
+// Add error handling for missing elements
+function getElementSafely(id) {
+	const element = document.getElementById(id);
+	if (!element) {
+		console.error(`Element with id '${id}' not found`);
+	}
+	return element;
+}
 
 // Initialize map
 const map = L.map('map');
@@ -574,7 +585,7 @@ async function findRoadsideStops(route, config, progressCallback) {
 	
 	// Find attractions near each sample point
 	const roadsideStops = [];
-	const maxSamples = Math.min(samplePoints.length, 20); // Limit for performance
+	const maxSamples = Math.min(samplePoints.length, 12); // Reduced for better performance
 	
 	for (let i = 0; i < maxSamples; i++) {
 		const point = samplePoints[i];
@@ -588,8 +599,8 @@ async function findRoadsideStops(route, config, progressCallback) {
 			// Get user preferences for filtering
 			const preferences = getUserPreferences();
 			const attractions = await Promise.race([
-				fetchPois(point.lat, point.lon, 20000, 8, preferences),
-				new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 6000))
+				fetchPois(point.lat, point.lon, 20000, 4, preferences),
+				new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
 			]);
 			
 			// Filter attractions based on trip style and time constraints
@@ -1145,7 +1156,7 @@ async function fetchRestaurants(lat, lon, radiusMeters = 15000) {
 				};
 			})
 			.sort((a, b) => a.distanceMeters - b.distanceMeters)
-			.slice(0, 8); // Limit to 8 restaurants
+			.slice(0, 5); // Limit to 5 restaurants for better performance
 	} catch (error) {
 		console.error('Restaurant search failed:', error);
 		return [];
@@ -1265,7 +1276,6 @@ function filterAndRankPois(pois, centerLat, centerLon, preferences = []) {
 }
 
 function renderItinerary(start, end, stops, totalDistanceMeters, totalDurationSeconds, days, itineraryDays = null) {
-	itineraryEl.innerHTML = '';
 	const formatKm = (m) => (m / 1000).toFixed(1) + ' km';
 	const formatH = (s) => {
 		const h = Math.floor(s / 3600);
@@ -1277,6 +1287,11 @@ function renderItinerary(start, end, stops, totalDistanceMeters, totalDurationSe
 	if (itineraryDays && itineraryDays.length > 0) {
 		renderEnhancedItinerary(start, end, itineraryDays, totalDistanceMeters, totalDurationSeconds, days);
 		return;
+	}
+
+	// Fallback to old itinerary rendering
+	if (itineraryEl) {
+		itineraryEl.innerHTML = '';
 	}
 
 	// Fallback to simple itinerary
@@ -1318,10 +1333,10 @@ function renderEnhancedItinerary(start, end, itineraryDays, totalDistanceMeters,
 		return `${h}h ${m}m`;
 	};
 
-	// Trip Overview Summary
+	// Trip Overview Summary (in sidebar)
 	renderTripOverview(start, end, itineraryDays, totalDistanceMeters, totalDurationSeconds, days);
 	
-	// Detailed Day-by-Day Section
+	// Detailed Day-by-Day Section (below map)
 	renderDetailedItinerary(start, end, itineraryDays, totalDistanceMeters, totalDurationSeconds, days);
 }
 
@@ -1339,53 +1354,48 @@ function renderTripOverview(start, end, itineraryDays, totalDistanceMeters, tota
 	const totalOvernightStops = itineraryDays.filter(day => day.overnightStop).length;
 	const totalRoadsideStops = itineraryDays.reduce((sum, day) => sum + day.roadsideStops.length, 0);
 
-	// Trip Overview Section
-	const overviewDiv = document.createElement('div');
-	overviewDiv.className = 'itinerary-section';
-	overviewDiv.innerHTML = `
-		<div class="section-header">
-			<h2>🗺️ Trip Overview</h2>
+	// Trip Overview Section (for sidebar)
+	const overviewEl = getElementSafely('trip-overview');
+	if (!overviewEl) return;
+	
+	overviewEl.innerHTML = `
+		<div class="overview-item">
+			<span class="overview-icon">🚀</span>
+			<div class="overview-content">
+				<h4>Start</h4>
+				<p>${start.displayName}</p>
+			</div>
 		</div>
-		<div class="trip-overview">
-			<div class="overview-item">
-				<span class="overview-icon">🚀</span>
-				<div class="overview-content">
-					<h4>Start</h4>
-					<p>${start.displayName}</p>
-				</div>
+		<div class="overview-item">
+			<span class="overview-icon">🏁</span>
+			<div class="overview-content">
+				<h4>End</h4>
+				<p>${end.displayName}</p>
 			</div>
-			<div class="overview-item">
-				<span class="overview-icon">🏁</span>
-				<div class="overview-content">
-					<h4>End</h4>
-					<p>${end.displayName}</p>
-				</div>
+		</div>
+		<div class="overview-stats">
+			<div class="stat-item">
+				<span class="stat-value">${formatKm(totalDistanceMeters)}</span>
+				<span class="stat-label">Total Distance</span>
 			</div>
-			<div class="overview-stats">
-				<div class="stat-item">
-					<span class="stat-value">${formatKm(totalDistanceMeters)}</span>
-					<span class="stat-label">Total Distance</span>
-				</div>
-				<div class="stat-item">
-					<span class="stat-value">${formatH(totalDurationSeconds)}</span>
-					<span class="stat-label">Total Time</span>
-				</div>
-				<div class="stat-item">
-					<span class="stat-value">${days}</span>
-					<span class="stat-label">Days</span>
-				</div>
-				<div class="stat-item">
-					<span class="stat-value">${totalOvernightStops}</span>
-					<span class="stat-label">Overnight Stops</span>
-				</div>
-				<div class="stat-item">
-					<span class="stat-value">${totalRoadsideStops}</span>
-					<span class="stat-label">Attractions</span>
-				</div>
+			<div class="stat-item">
+				<span class="stat-value">${formatH(totalDurationSeconds)}</span>
+				<span class="stat-label">Total Time</span>
+			</div>
+			<div class="stat-item">
+				<span class="stat-value">${days}</span>
+				<span class="stat-label">Days</span>
+			</div>
+			<div class="stat-item">
+				<span class="stat-value">${totalOvernightStops}</span>
+				<span class="stat-label">Overnight Stops</span>
+			</div>
+			<div class="stat-item">
+				<span class="stat-value">${totalRoadsideStops}</span>
+				<span class="stat-label">Attractions</span>
 			</div>
 		</div>
 	`;
-	itineraryEl.appendChild(overviewDiv);
 }
 
 function renderDetailedItinerary(start, end, itineraryDays, totalDistanceMeters, totalDurationSeconds, days) {
@@ -1396,10 +1406,11 @@ function renderDetailedItinerary(start, end, itineraryDays, totalDistanceMeters,
 		return `${h}h ${m}m`;
 	};
 
-	// Detailed Itinerary Section
-	const detailedDiv = document.createElement('div');
-	detailedDiv.className = 'itinerary-section';
-	detailedDiv.innerHTML = `
+	// Detailed Itinerary Section (below map)
+	const detailedEl = getElementSafely('detailed-itinerary');
+	if (!detailedEl) return;
+	
+	detailedEl.innerHTML = `
 		<div class="section-header">
 			<h2>📅 Detailed Itinerary</h2>
 			<p class="section-subtitle">Click on any day to see detailed information</p>
@@ -1481,7 +1492,7 @@ function renderDetailedItinerary(start, end, itineraryDays, totalDistanceMeters,
 			foodSection.className = 'detail-section';
 			foodSection.innerHTML = `<h4 class="detail-section-title">🍽️ Dining Options</h4>`;
 			
-			dayData.foodOptions.slice(0, 5).forEach((restaurant, index) => {
+			dayData.foodOptions.slice(0, 3).forEach((restaurant, index) => {
 				const restaurantDiv = document.createElement('div');
 				restaurantDiv.className = 'detail-item food-stop';
 				restaurantDiv.innerHTML = `
@@ -1508,10 +1519,8 @@ function renderDetailedItinerary(start, end, itineraryDays, totalDistanceMeters,
 		
 		dayDiv.appendChild(dayHeader);
 		dayDiv.appendChild(dayDetails);
-		detailedDiv.appendChild(dayDiv);
+		detailedEl.appendChild(dayDiv);
 	});
-	
-	itineraryEl.appendChild(detailedDiv);
 }
 
 function getDayIcon(day) {
@@ -1846,7 +1855,7 @@ async function planTrip(event) {
 		
 		const poisPerStop = await Promise.all(stops.map(async (stop, index) => {
 			try {
-				const pois = await fetchPois(stop.lat, stop.lon, 50000, 12, preferences);
+				const pois = await fetchPois(stop.lat, stop.lon, 50000, 6, preferences);
 				const progress = 95 + ((index + 1) / stops.length) * 4; // 95-99%
 				updateProgress(progress, `Finding activities for stop ${index + 1}/${stops.length}...`);
 				return { stop, pois };

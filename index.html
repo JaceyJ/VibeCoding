@@ -34,11 +34,86 @@
             <label for="days">Days</label>
             <input id="days" name="days" type="number" min="1" max="30" value="3" required />
           </div>
+          
+          <div class="form-section">
+            <label class="section-label">Trip Style</label>
+            <p class="section-description">How do you want to travel?</p>
+            <div class="trip-style-grid">
+              <label class="trip-style-option">
+                <input type="radio" name="tripStyle" value="lazy" checked />
+                <span class="trip-style-icon">😴</span>
+                <span class="trip-style-text">Lazy Trip</span>
+                <span class="trip-style-desc">Relaxed pace, fewer stops, more time at each location</span>
+              </label>
+              <label class="trip-style-option">
+                <input type="radio" name="tripStyle" value="sightseeing" />
+                <span class="trip-style-icon">👀</span>
+                <span class="trip-style-text">Sightseeing</span>
+                <span class="trip-style-desc">Lots of stops, roadside attractions, quick visits</span>
+              </label>
+              <label class="trip-style-option">
+                <input type="radio" name="tripStyle" value="quick" />
+                <span class="trip-style-icon">⚡</span>
+                <span class="trip-style-text">Quick Trip</span>
+                <span class="trip-style-desc">Efficient route, hotels in interesting places, minimal detours</span>
+              </label>
+            </div>
+          </div>
+          
+          <div class="form-section">
+            <label class="section-label">Activity Preferences</label>
+            <p class="section-description">Choose what interests you most to get personalized recommendations</p>
+            <div class="preferences-grid">
+              <label class="preference-option">
+                <input type="checkbox" name="preferences" value="outdoor" />
+                <span class="preference-icon">🏔️</span>
+                <span class="preference-text">Outdoor & Nature</span>
+                <span class="preference-desc">Hiking, parks, beaches, waterfalls</span>
+              </label>
+              <label class="preference-option">
+                <input type="checkbox" name="preferences" value="cultural" />
+                <span class="preference-icon">🏛️</span>
+                <span class="preference-text">Cultural & History</span>
+                <span class="preference-desc">Museums, historic sites, monuments</span>
+              </label>
+              <label class="preference-option">
+                <input type="checkbox" name="preferences" value="entertainment" />
+                <span class="preference-icon">🎭</span>
+                <span class="preference-text">Entertainment</span>
+                <span class="preference-desc">Theaters, stadiums, amusement parks</span>
+              </label>
+              <label class="preference-option">
+                <input type="checkbox" name="preferences" value="food" />
+                <span class="preference-icon">🍷</span>
+                <span class="preference-text">Food & Drink</span>
+                <span class="preference-desc">Wineries, breweries, local cuisine</span>
+              </label>
+              <label class="preference-option">
+                <input type="checkbox" name="preferences" value="family" />
+                <span class="preference-icon">👨‍👩‍👧‍👦</span>
+                <span class="preference-text">Family Friendly</span>
+                <span class="preference-desc">Zoos, aquariums, kid activities</span>
+              </label>
+              <label class="preference-option">
+                <input type="checkbox" name="preferences" value="adventure" />
+                <span class="preference-icon">🎢</span>
+                <span class="preference-text">Adventure & Sports</span>
+                <span class="preference-desc">Sports venues, adventure activities</span>
+              </label>
+            </div>
+          </div>
+          
           <div class="form-actions">
             <button type="submit">Plan Trip</button>
           </div>
         </form>
         <div id="status" class="status" aria-live="polite"></div>
+        <div id="progress-container" class="progress-container" style="display: none;">
+          <div class="progress-bar">
+            <div id="progress-fill" class="progress-fill"></div>
+          </div>
+          <div id="progress-text" class="progress-text"></div>
+        </div>
       </section>
 
       <section class="layout">
@@ -65,3 +140,10 @@
     <script src="app.js"></script>
   </body>
 </html>
+
+
+
+
+
+
+

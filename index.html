@@ -9,8 +9,8 @@
   </head>
   <body>
     <header class="app-header">
-      <h1>Roadtrip Planner</h1>
-      <p>Plan a multi-day roadtrip: map your route and discover things to do along the way.</p>
+      <h1>Smart Trip Planner</h1>
+      <p>Plan your perfect road trip with customizable pace, drive time, and activity preferences.</p>
     </header>
 
     <main class="app-main">
@@ -30,75 +30,80 @@
               <div id="end-suggestions" class="suggestions" role="listbox" aria-label="End suggestions"></div>
             </div>
           </div>
-          <div class="form-row">
-            <label for="days">Days</label>
-            <input id="days" name="days" type="number" min="1" max="30" value="3" required />
-          </div>
           
           <div class="form-section">
-            <label class="section-label">Trip Style</label>
+            <label class="section-label">Trip Pace</label>
             <p class="section-description">How do you want to travel?</p>
-            <div class="trip-style-grid">
-              <label class="trip-style-option">
-                <input type="radio" name="tripStyle" value="lazy" checked />
-                <span class="trip-style-icon">😴</span>
-                <span class="trip-style-text">Lazy Trip</span>
-                <span class="trip-style-desc">Relaxed pace, fewer stops, more time at each location</span>
+            <div class="trip-pace-grid">
+              <label class="trip-pace-option">
+                <input type="radio" name="tripPace" value="fast" checked />
+                <span class="trip-pace-icon">⚡</span>
+                <span class="trip-pace-text">Fast Pace</span>
+                <span class="trip-pace-desc">Minimal stops, efficient route</span>
               </label>
-              <label class="trip-style-option">
-                <input type="radio" name="tripStyle" value="sightseeing" />
-                <span class="trip-style-icon">👀</span>
-                <span class="trip-style-text">Sightseeing</span>
-                <span class="trip-style-desc">Lots of stops, roadside attractions, quick visits</span>
+              <label class="trip-pace-option">
+                <input type="radio" name="tripPace" value="balanced" />
+                <span class="trip-pace-icon">⚖️</span>
+                <span class="trip-pace-text">Balanced</span>
+                <span class="trip-pace-desc">Some stops, moderate pace</span>
               </label>
-              <label class="trip-style-option">
-                <input type="radio" name="tripStyle" value="quick" />
-                <span class="trip-style-icon">⚡</span>
-                <span class="trip-style-text">Quick Trip</span>
-                <span class="trip-style-desc">Efficient route, hotels in interesting places, minimal detours</span>
+              <label class="trip-pace-option">
+                <input type="radio" name="tripPace" value="explore" />
+                <span class="trip-pace-icon">🗺️</span>
+                <span class="trip-pace-text">Explore</span>
+                <span class="trip-pace-desc">Many stops, discover attractions</span>
               </label>
             </div>
           </div>
           
           <div class="form-section">
+            <label class="section-label">Daily Drive Time</label>
+            <p class="section-description">How many hours do you want to drive per day?</p>
+            <div class="drive-time-controls">
+              <div class="form-row">
+                <label for="minDriveTime">Min Hours:</label>
+                <input id="minDriveTime" name="minDriveTime" type="number" min="1" max="12" value="4" step="0.5" />
+              </div>
+              <div class="form-row">
+                <label for="maxDriveTime">Max Hours:</label>
+                <input id="maxDriveTime" name="maxDriveTime" type="number" min="1" max="12" value="8" step="0.5" />
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-section">
             <label class="section-label">Activity Preferences</label>
-            <p class="section-description">Choose what interests you most to get personalized recommendations</p>
+            <p class="section-description">What interests you most?</p>
             <div class="preferences-grid">
               <label class="preference-option">
                 <input type="checkbox" name="preferences" value="outdoor" />
                 <span class="preference-icon">🏔️</span>
                 <span class="preference-text">Outdoor & Nature</span>
-                <span class="preference-desc">Hiking, parks, beaches, waterfalls</span>
               </label>
               <label class="preference-option">
                 <input type="checkbox" name="preferences" value="cultural" />
                 <span class="preference-icon">🏛️</span>
                 <span class="preference-text">Cultural & History</span>
-                <span class="preference-desc">Museums, historic sites, monuments</span>
               </label>
               <label class="preference-option">
                 <input type="checkbox" name="preferences" value="entertainment" />
                 <span class="preference-icon">🎭</span>
                 <span class="preference-text">Entertainment</span>
-                <span class="preference-desc">Theaters, stadiums, amusement parks</span>
               </label>
               <label class="preference-option">
                 <input type="checkbox" name="preferences" value="food" />
                 <span class="preference-icon">🍷</span>
                 <span class="preference-text">Food & Drink</span>
-                <span class="preference-desc">Wineries, breweries, local cuisine</span>
               </label>
               <label class="preference-option">
                 <input type="checkbox" name="preferences" value="family" />
                 <span class="preference-icon">👨‍👩‍👧‍👦</span>
                 <span class="preference-text">Family Friendly</span>
-                <span class="preference-desc">Zoos, aquariums, kid activities</span>
               </label>
               <label class="preference-option">
                 <input type="checkbox" name="preferences" value="adventure" />
                 <span class="preference-icon">🎢</span>
                 <span class="preference-text">Adventure & Sports</span>
-                <span class="preference-desc">Sports venues, adventure activities</span>
               </label>
             </div>
           </div>

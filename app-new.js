@@ -1,17 +1,11 @@
 // Main application initialization and orchestration
-import { MAP_CONFIG, TRIP_PACE_CONFIG, UI_CONFIG } from './config.js';
-import { geocode, fetchRoute, fetchAccommodations } from './api.js';
-import { computeSmartTripStops, fetchPoisSimple } from './trip-planner.js';
-import { initializeMap, clearMap, addMarker, renderRoute, setStatus, showProgress, updateProgress, hideProgress, renderTripResults } from './ui.js';
-import { setupAutocomplete, initializeAutocomplete } from './autocomplete.js';
-import { getElementSafely, validateLocation } from './utils.js';
 
 // Global variables
 let map, baselayer, routeLayer;
 
 // Initialize the application
 function initializeApp() {
-// Initialize map
+	// Initialize map
 	initializeMap();
 	
 	// Initialize autocomplete
@@ -23,31 +17,25 @@ function initializeApp() {
 	console.log('Smart Trip Planner initialized successfully');
 }
 
+// Initialize Leaflet map
+function initializeMap() {
+	map = L.map('map').setView(MAP_CONFIG.defaultCenter, MAP_CONFIG.defaultZoom);
+	
+	baselayer = L.tileLayer(MAP_CONFIG.tileLayer, {
+		attribution: MAP_CONFIG.attribution
+	}).addTo(map);
+	
+	// Make map globally available
+	window.map = map;
+	window.baselayer = baselayer;
+}
+
 // Setup form event handlers
 function setupFormHandlers() {
-	const form = getElementSafely('planner-form');
+	const form = getElementSafely('trip-form');
 	if (!form) return;
 	
 	form.addEventListener('submit', planTrip);
-}
-
-// Helper functions to get form values
-function getTripPace() {
-	const selectedPace = document.querySelector('input[name="tripPace"]:checked');
-	return selectedPace ? selectedPace.value : 'balanced';
-}
-
-function getDriveTimeRange() {
-	const minDriveTimeInput = getElementSafely('minDriveTime');
-	const maxDriveTimeInput = getElementSafely('maxDriveTime');
-	const min = parseInt(minDriveTimeInput.value, 10);
-	const max = parseInt(maxDriveTimeInput.value, 10);
-	return { min, max };
-}
-
-function getUserPreferences() {
-	const checkboxes = document.querySelectorAll('input[name="preferences"]:checked');
-	return Array.from(checkboxes).map(cb => cb.value);
 }
 
 // Main trip planning function
@@ -74,13 +62,13 @@ async function planTrip(event) {
 		let start, end;
 		try {
 			start = await geocode(startText);
-	} catch (error) {
+		} catch (error) {
 			throw new Error(`Could not find start location: ${startText}`);
-			}
-			
-			try {
+		}
+		
+		try {
 			end = await geocode(endText);
-			} catch (error) {
+		} catch (error) {
 			throw new Error(`Could not find end location: ${endText}`);
 		}
 		
@@ -103,11 +91,11 @@ async function planTrip(event) {
 		// Get user preferences
 		const tripPace = getTripPace();
 		const driveTimeRange = getDriveTimeRange();
-			const preferences = getUserPreferences();
+		const preferences = getUserPreferences();
 		
 		// Get configuration
 		const config = TRIP_PACE_CONFIG[tripPace];
-	const totalDistance = route.distance;
+		const totalDistance = route.distance;
 		const totalDuration = route.duration;
 		
 		setStatus('Planning trip with your preferences...');
@@ -131,20 +119,14 @@ async function planTrip(event) {
 		});
 		
 		const stops = result.stops;
-		const roadsideStops = result.roadsideStops;
-		console.log(`Created ${stops.length} overnight stops and ${roadsideStops.length} roadside stops`);
+		console.log(`Created ${stops.length} sophisticated stops`);
 		
-		// Add markers for overnight stops (orange)
+		// Add markers for stops
 		stops.forEach((stop, i) => {
-			addMarker(stop.lat, stop.lon, `Overnight Stop ${i + 1}: ${stop.name}`, '#f59e0b');
+			addMarker(stop.lat, stop.lon, `Stop ${i + 1}: ${stop.name}`, '#f59e0b');
 		});
 		
-		// Add markers for roadside stops (blue)
-		roadsideStops.forEach((stop, i) => {
-			addMarker(stop.lat, stop.lon, `Activity Stop ${i + 1}: ${stop.name}`, '#3b82f6');
-		});
-		
-		// Find POIs and accommodations for each overnight stop
+		// Find POIs and accommodations for each stop
 		setStatus(`Finding attractions and accommodations based on your preferences...`);
 		const poisPerStop = await Promise.all(stops.map(async (stop, index) => {
 			try {
@@ -153,36 +135,19 @@ async function planTrip(event) {
 					fetchAccommodations(stop.lat, stop.lon, config.accommodationRadius, 5)
 				]);
 				
-				const progress = 50 + ((index + 1) / stops.length) * 20; // 50-70%
-				updateProgress(progress, `Finding activities and accommodations for overnight stop ${index + 1}/${stops.length}...`);
+				const progress = 50 + ((index + 1) / stops.length) * 40; // 50-90%
+				updateProgress(progress, `Finding activities and accommodations for stop ${index + 1}/${stops.length}...`);
 				
-				console.log(`Overnight Stop ${index + 1}: ${pois.length} POIs, ${accommodations.length} accommodations`);
-				return { stop, pois, accommodations, type: 'overnight' };
+				console.log(`Stop ${index + 1}: ${pois.length} POIs, ${accommodations.length} accommodations`);
+				return { stop, pois, accommodations };
 			} catch (e) {
-				console.error('Error fetching data for overnight stop:', e);
-				return { stop, pois: [], accommodations: [], type: 'overnight' };
+				console.error('Error fetching data for stop:', e);
+				return { stop, pois: [], accommodations: [] };
 			}
 		}));
 		
-		// Process roadside stops (they already have POIs from findRoadsideStops)
-		const roadsideStopsWithData = roadsideStops.map((stop, index) => {
-			const progress = 70 + ((index + 1) / roadsideStops.length) * 20; // 70-90%
-			updateProgress(progress, `Processing roadside stop ${index + 1}/${roadsideStops.length}...`);
-			
-			console.log(`Roadside Stop ${index + 1}: ${stop.pois.length} POIs`);
-			return {
-				stop, 
-				pois: stop.pois, 
-				accommodations: [], // Roadside stops don't have accommodations
-				type: 'roadside' 
-			};
-		});
-		
-		// Combine all stops for rendering
-		const allStopsWithData = [...poisPerStop, ...roadsideStopsWithData];
-		
 		// Render results
-		renderTripResults(start, end, stops, allStopsWithData, totalDistance, totalDuration, days, tripPace);
+		renderTripResults(start, end, stops, poisPerStop, totalDistance, totalDuration, days, tripPace);
 		
 		updateProgress(100, 'Complete!');
 		setStatus('Trip planned successfully!');

@@ -1,0 +1,125 @@
+.autocomplete-location-container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.autocomplete-location-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.autocomplete-location-wrapper {
+  position: relative;
+}
+
+.autocomplete-location-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  padding-right: 2.5rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.autocomplete-location-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.autocomplete-location-input::placeholder {
+  color: #9ca3af;
+}
+
+.autocomplete-loading-indicator {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.autocomplete-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 0.25rem;
+  background-color: #ffffff;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.autocomplete-suggestion {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.15s;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.autocomplete-suggestion:last-child {
+  border-bottom: none;
+}
+
+.autocomplete-suggestion:hover,
+.autocomplete-suggestion.selected {
+  background-color: #f3f4f6;
+}
+
+.suggestion-display-name {
+  font-weight: 600;
+  color: #111827;
+  font-size: 0.9375rem;
+  margin-bottom: 0.25rem;
+}
+
+.suggestion-full-address {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+/* Scrollbar styling for suggestions */
+.autocomplete-suggestions::-webkit-scrollbar {
+  width: 8px;
+}
+
+.autocomplete-suggestions::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.autocomplete-suggestions::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.autocomplete-suggestions::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+

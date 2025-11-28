@@ -1,0 +1,91 @@
+.driving-time-input-container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+}
+
+.driving-time-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.driving-time-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.driving-time-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 2px solid #e5e7eb;
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #374151;
+  flex-shrink: 0;
+}
+
+.driving-time-button:hover:not(:disabled) {
+  background-color: #f3f4f6;
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.driving-time-button:active:not(:disabled) {
+  background-color: #e5e7eb;
+}
+
+.driving-time-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.driving-time-input-inner {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background-color: #ffffff;
+}
+
+.driving-time-input-inner:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.driving-time-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #111827;
+  background: transparent;
+  text-align: center;
+  -moz-appearance: textfield;
+}
+
+.driving-time-input::-webkit-outer-spin-button,
+.driving-time-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.driving-time-unit {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-left: 0.5rem;
+  white-space: nowrap;
+}
+
+

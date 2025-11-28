@@ -1,0 +1,118 @@
+.overnight-stops-container {
+  margin-top: 2rem;
+}
+
+.overnight-stops-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 1.5rem;
+}
+
+.overnight-stops-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.overnight-stop-card {
+  background-color: #ffffff;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  display: flex;
+  gap: 1.5rem;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.overnight-stop-card:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.stop-day-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  background-color: #10b981;
+  color: #ffffff;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.stop-content {
+  flex: 1;
+}
+
+.stop-city-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 0.25rem 0;
+}
+
+.stop-city-full {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0 0 1rem 0;
+}
+
+.stop-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.stop-detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.stop-detail-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stop-detail-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.stop-place-type {
+  text-transform: capitalize;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  display: inline-block;
+}
+
+.stop-place-type[data-place-type="city"] {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.stop-place-type[data-place-type="town"] {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.stop-place-type[data-place-type="village"] {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.stop-place-type[data-place-type="hamlet"],
+.stop-place-type[data-place-type="locality"],
+.stop-place-type[data-place-type="unknown"] {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+

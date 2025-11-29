@@ -46,10 +46,23 @@ export class AttractionService {
         break;
         
       case 'outdoors-adventure':
+        // Use simpler queries that are more likely to return results from Nominatim
         if (areaName) {
-          queries.push(`park ${areaName}`, `hiking ${areaName}`, `nature ${areaName}`, `adventure ${areaName}`, `outdoor activity ${areaName}`);
+          queries.push(
+            `park ${areaName}`,  // Start with simple park - most likely to work
+            `hiking ${areaName}`, 
+            `outdoor ${areaName}`,
+            `nature ${areaName}`,
+            `recreation ${areaName}`
+          );
         } else {
-          queries.push('park', 'hiking', 'nature', 'adventure', 'outdoor activity');
+          queries.push(
+            'park',  // Start with simple park - most likely to work
+            'hiking', 
+            'outdoor',
+            'nature',
+            'recreation'
+          );
         }
         break;
         
@@ -150,13 +163,21 @@ export class AttractionService {
       // Build search queries based on trip type
       const tripTypeQueries = this.getSearchQueriesForTripType(searchParams.tripType, areaName);
       
+      // For outdoors-adventure, add additional fallback queries if specific ones don't work
+      let fallbackQueries: string[] = [];
+      if (searchParams.tripType === 'outdoors-adventure') {
+        fallbackQueries = areaName
+          ? [`outdoor ${areaName}`, `nature ${areaName}`, `park ${areaName}`, `recreation ${areaName}`]
+          : ['outdoor', 'nature', 'park', 'recreation'];
+      }
+      
       // Also add general attraction queries for broader coverage
       const generalQueries = areaName 
         ? [`attraction ${areaName}`, `landmark ${areaName}`, `point of interest ${areaName}`]
         : ['attraction', 'landmark', 'point of interest'];
       
-      // Combine trip-specific and general queries
-      const allQueries = [...tripTypeQueries, ...generalQueries];
+      // Combine trip-specific, fallback, and general queries
+      const allQueries = [...tripTypeQueries, ...fallbackQueries, ...generalQueries];
       
       // If specific categories requested, add those too
       if (searchParams.categories && searchParams.categories.length > 0) {
@@ -169,8 +190,10 @@ export class AttractionService {
         }
       }
 
-      // Limit queries to avoid rate limiting (prioritize trip type queries)
-      const uniqueQueries = Array.from(new Set(allQueries)).slice(0, 6);
+      // Limit queries to avoid rate limiting (prioritize trip type queries, then fallback, then general)
+      // For outdoors-adventure, allow more queries to ensure we find results
+      const maxQueries = searchParams.tripType === 'outdoors-adventure' ? 8 : 6;
+      const uniqueQueries = Array.from(new Set(allQueries)).slice(0, maxQueries);
       console.log(`[AttractionService] Using ${uniqueQueries.length} search queries for trip type "${searchParams.tripType}":`, uniqueQueries);
 
       // Search for each query
@@ -206,11 +229,30 @@ export class AttractionService {
 
             if (response.ok) {
               const data = await response.json();
+              console.log(`[AttractionService] Query "${query}": Nominatim returned ${data.length} total results`);
+              
+              // Debug: log first few results to see what we're getting
+              if (data.length > 0 && i === 0) {
+                console.log(`[AttractionService] Sample result from "${query}":`, {
+                  display_name: data[0].display_name,
+                  type: data[0].type,
+                  class: data[0].class,
+                  category: data[0].category,
+                  extratags: data[0].extratags,
+                  lat: data[0].lat,
+                  lon: data[0].lon
+                });
+              }
               
               // Filter for attractions and verify they're in bbox
               const attractionResults = data.filter((result: any) => {
                 const resultLat = parseFloat(result.lat);
                 const resultLon = parseFloat(result.lon);
+                
+                // Validate coordinates
+                if (isNaN(resultLat) || isNaN(resultLon)) {
+                  return false;
+                }
                 
                 // Check if result is actually within bbox
                 const bboxArray = bbox.split(',').map(parseFloat);
@@ -229,41 +271,48 @@ export class AttractionService {
                 const name = (result.display_name || '').toLowerCase();
                 const extratags = result.extratags || {};
                 
-                // Check for tourism tags
-                const isTourism = extratags.tourism || 
-                                 type === 'tourism' ||
-                                 category === 'tourism';
+                // For outdoors-adventure, be extremely permissive - accept almost anything in bbox
+                // Let the scoring system prioritize adventure activities
+                if (searchParams.tripType === 'outdoors-adventure') {
+                  // Reject only obvious non-outdoor things
+                  const isNotOutdoor = name.includes('restaurant') || name.includes('hotel') || 
+                                      name.includes('mall') || name.includes('store') ||
+                                      name.includes('gas station') || name.includes('bank') ||
+                                      name.includes('hospital') || name.includes('school') ||
+                                      (type === 'amenity' && !name.includes('park') && !name.includes('campground'));
+                  
+                  // Accept everything else - let scoring handle prioritization
+                  return !isNotOutdoor;
+                }
                 
-                // Check for historic tags
-                const isHistoric = extratags.historic ||
-                                  name.includes('historic') ||
-                                  name.includes('monument') ||
-                                  name.includes('memorial');
-                
-                // Check for leisure tags
-                const isLeisure = extratags.leisure ||
-                                 type === 'leisure' ||
-                                 name.includes('park') ||
-                                 name.includes('zoo') ||
-                                 name.includes('aquarium');
-                
-                // Check for common attraction keywords
-                const hasAttractionKeywords = name.includes('museum') ||
-                                            name.includes('gallery') ||
-                                            name.includes('attraction') ||
-                                            name.includes('landmark') ||
-                                            name.includes('monument') ||
-                                            name.includes('park') ||
-                                            name.includes('zoo') ||
-                                            name.includes('aquarium') ||
-                                            name.includes('theater') ||
+                // For other trip types, use standard filtering
+                const isTourism = extratags.tourism || type === 'tourism' || category === 'tourism';
+                const isHistoric = extratags.historic || name.includes('historic') || name.includes('monument') || name.includes('memorial');
+                const isLeisure = extratags.leisure || type === 'leisure';
+                const isAdventureActivity = extratags.route === 'hiking' || extratags.route === 'foot' ||
+                                           extratags.route === 'mountain_bike' || extratags.sport === 'climbing' ||
+                                           extratags.sport === 'rafting' || extratags.sport === 'hiking' ||
+                                           extratags.sport === 'mountain_biking' || extratags.sport === 'kayaking' ||
+                                           extratags.sport === 'canoeing' || category === 'sport' ||
+                                           name.includes('trail') || name.includes('climbing') ||
+                                           name.includes('rafting') || name.includes('hiking') ||
+                                           name.includes('adventure') || name.includes('outdoor');
+                const isNatural = extratags.natural || type === 'natural' || category === 'natural' ||
+                                 name.includes('national park') || name.includes('state park') ||
+                                 name.includes('forest') || name.includes('mountain') ||
+                                 name.includes('canyon') || name.includes('river') ||
+                                 name.includes('lake') || name.includes('beach');
+                const hasAttractionKeywords = name.includes('museum') || name.includes('gallery') ||
+                                            name.includes('attraction') || name.includes('landmark') ||
+                                            name.includes('monument') || name.includes('zoo') ||
+                                            name.includes('aquarium') || name.includes('theater') ||
                                             name.includes('theatre');
                 
-                return isTourism || isHistoric || isLeisure || hasAttractionKeywords;
+                return isTourism || isHistoric || isLeisure || isAdventureActivity || isNatural || hasAttractionKeywords;
               });
               
               allResults.push(...attractionResults);
-              console.log(`[AttractionService] Query "${query}": found ${attractionResults.length} attractions in bbox`);
+              console.log(`[AttractionService] Query "${query}": found ${attractionResults.length} attractions in bbox (after filtering)`);
               success = true;
             } else if (response.status === 503 || response.status === 429) {
               // Rate limited - wait longer and retry
@@ -296,6 +345,85 @@ export class AttractionService {
       // Remove duplicates
       const uniqueResults = this.removeDuplicates(allResults);
       console.log(`[AttractionService] Found ${uniqueResults.length} unique potential attractions`);
+
+      // If no results found for outdoors-adventure, try even simpler queries as last resort
+      if (uniqueResults.length === 0 && searchParams.tripType === 'outdoors-adventure') {
+        console.log(`[AttractionService] No results found, trying simpler fallback queries...`);
+        const fallbackQueries = areaName 
+          ? [`${areaName}`, `park near ${areaName}`, `attraction ${areaName}`]
+          : ['park', 'attraction', 'landmark'];
+        
+        for (const query of fallbackQueries) {
+          try {
+            const searchParams_url = new URLSearchParams({
+              q: query,
+              format: 'json',
+              limit: '30',
+              bbox: bbox,
+              addressdetails: '1',
+              extratags: '1',
+              namedetails: '1',
+              'accept-language': 'en',
+              bounded: '1'
+            });
+
+            const response = await fetch(
+              `${AttractionService.NOMINATIM_API_URL}?${searchParams_url.toString()}`,
+              {
+                headers: {
+                  'User-Agent': 'TripPlanningApp/1.0'
+                }
+              });
+
+            if (response.ok) {
+              const data = await response.json();
+              console.log(`[AttractionService] Fallback query "${query}": Nominatim returned ${data.length} total results`);
+              
+              const fallbackResults = data.filter((result: any) => {
+                const resultLat = parseFloat(result.lat);
+                const resultLon = parseFloat(result.lon);
+                
+                if (isNaN(resultLat) || isNaN(resultLon)) {
+                  return false;
+                }
+                
+                const bboxArray = bbox.split(',').map(parseFloat);
+                const inBbox = resultLat >= bboxArray[0] && 
+                              resultLat <= bboxArray[2] &&
+                              resultLon >= bboxArray[1] && 
+                              resultLon <= bboxArray[3];
+                
+                if (!inBbox) {
+                  return false;
+                }
+                
+                // Very permissive - reject only obvious non-outdoor things
+                const name = (result.display_name || '').toLowerCase();
+                const isNotOutdoor = name.includes('restaurant') || name.includes('hotel') || 
+                                    name.includes('mall') || name.includes('store') ||
+                                    name.includes('gas station') || name.includes('bank') ||
+                                    name.includes('hospital') || name.includes('school');
+                
+                return !isNotOutdoor;
+              });
+              
+              allResults.push(...fallbackResults);
+              console.log(`[AttractionService] Fallback query "${query}": found ${fallbackResults.length} results`);
+              
+              await new Promise(resolve => setTimeout(resolve, 500));
+            }
+          } catch (error) {
+            console.warn(`[AttractionService] Error in fallback query "${query}":`, error);
+          }
+        }
+        
+        // Remove duplicates again after fallback
+        const updatedUniqueResults = this.removeDuplicates(allResults);
+        console.log(`[AttractionService] After fallback: found ${updatedUniqueResults.length} unique potential attractions`);
+        // Replace uniqueResults with the updated list
+        uniqueResults.length = 0;
+        uniqueResults.push(...updatedUniqueResults);
+      }
 
       // Process and score attractions
       const attractions: Attraction[] = [];
@@ -456,14 +584,22 @@ export class AttractionService {
   }
 
   /**
-   * Score an attraction based on relevance
+   * Score an attraction based on trip type, distance, and other factors
    */
-  private static scoreAttraction(attraction: Attraction, center: Point): number {
+  private static scoreAttraction(
+    attraction: Attraction, 
+    center: Point,
+    tripType: TripType
+  ): number {
     let score = 100; // Base score
 
-    // Distance penalty (closer is better)
-    const distancePenalty = attraction.distance * 2;
+    // Distance penalty (closer is better) - stronger penalty
+    const distancePenalty = attraction.distance * 3;
     score -= distancePenalty;
+
+    // Trip type matching bonus (most important factor)
+    const tripTypeMatch = this.getTripTypeMatchScore(attraction, tripType);
+    score += tripTypeMatch;
 
     // Bonus for having category/type information
     if (attraction.category) {
@@ -475,12 +611,166 @@ export class AttractionService {
       score += 5;
     }
 
-    // Type-specific bonuses (museums and parks are often more popular)
-    if (attraction.type === 'museum' || attraction.type === 'park') {
-      score += 15;
+    // Rating bonus (if available)
+    if (attraction.rating) {
+      score += attraction.rating * 5; // Up to 25 points for 5-star rating
     }
 
+    // Type-specific popularity bonuses
+    const popularityBonus = this.getPopularityBonus(attraction.type, tripType);
+    score += popularityBonus;
+
     return Math.max(0, score);
+  }
+
+  /**
+   * Get match score based on trip type
+   */
+  private static getTripTypeMatchScore(attraction: Attraction, tripType: TripType): number {
+    const type = attraction.type.toLowerCase();
+    const name = (attraction.name || '').toLowerCase();
+    const category = (attraction.category || '').toLowerCase();
+
+    switch (tripType) {
+      case 'family-friendly':
+        if (type.includes('playground') || type.includes('zoo') || type.includes('aquarium') ||
+            name.includes('family') || name.includes('kids') || name.includes('children')) {
+          return 40; // Strong match
+        }
+        if (type.includes('park') || type.includes('museum') || type.includes('attraction')) {
+          return 20; // Moderate match
+        }
+        return 0;
+
+      case 'outdoors-adventure':
+        // Prioritize actual adventure activities over general parks
+        if (type.includes('hiking_trail') || type.includes('trail') || 
+            type.includes('climbing') || type.includes('water_sports') ||
+            type.includes('mountain_biking') || type.includes('rafting') ||
+            type.includes('kayaking') || type.includes('canoeing')) {
+          return 50; // Highest score for actual adventure activities
+        }
+        if (name.includes('trail') || name.includes('climbing') || 
+            name.includes('rafting') || name.includes('adventure') ||
+            name.includes('hiking') || category === 'sport' || category.includes('adventure')) {
+          return 45; // High score for adventure-related
+        }
+        // National/state parks and natural areas are good fallbacks
+        if (name.includes('national park') || name.includes('state park') ||
+            name.includes('national forest') || name.includes('wilderness') ||
+            type.includes('natural') || category.includes('natural')) {
+          return 30; // Good score for protected natural areas
+        }
+        // General parks get lower score but still acceptable as fallback
+        if (type.includes('park') || name.includes('park')) {
+          return 20; // Lower score for general parks but still acceptable
+        }
+        if (type.includes('nature') || type.includes('outdoor') ||
+            name.includes('nature') || name.includes('outdoor') ||
+            name.includes('recreation') || type.includes('leisure')) {
+          return 25; // Moderate score for nature/outdoor/recreation areas
+        }
+        // Even generic attractions in outdoor context can work
+        if (type.includes('attraction') || category.includes('tourism')) {
+          return 10; // Low score but acceptable as last resort
+        }
+        return 0;
+
+      case 'cultural':
+        if (type.includes('museum') || type.includes('gallery') || type.includes('historic') ||
+            type.includes('monument') || type.includes('theater') || type.includes('theatre')) {
+          return 40;
+        }
+        if (category.includes('cultural') || category.includes('historic')) {
+          return 25;
+        }
+        return 0;
+
+      case 'relaxation':
+        if (type.includes('spa') || type.includes('beach') || type.includes('wellness') ||
+            name.includes('spa') || name.includes('beach') || name.includes('resort')) {
+          return 40;
+        }
+        if (type.includes('park') && (name.includes('scenic') || name.includes('garden'))) {
+          return 25;
+        }
+        return 0;
+
+      case 'nightlife':
+        if (type.includes('bar') || type.includes('club') || type.includes('nightlife') ||
+            category.includes('entertainment') || name.includes('night')) {
+          return 40;
+        }
+        if (type.includes('theater') || type.includes('venue')) {
+          return 20;
+        }
+        return 0;
+
+      case 'shopping':
+        if (type.includes('shop') || type.includes('mall') || type.includes('market') ||
+            category.includes('shopping') || name.includes('mall') || name.includes('market')) {
+          return 40;
+        }
+        return 0;
+
+      case 'all':
+      default:
+        // For 'all', give moderate bonus to well-known types
+        if (type.includes('museum') || type.includes('park') || type.includes('attraction')) {
+          return 15;
+        }
+        return 0;
+    }
+  }
+
+  /**
+   * Get popularity bonus based on attraction type
+   */
+  private static getPopularityBonus(type: string, tripType: TripType): number {
+    const typeLower = type.toLowerCase();
+    
+    // For outdoors-adventure, prioritize adventure activities
+    if (tripType === 'outdoors-adventure') {
+      if (typeLower.includes('hiking_trail') || typeLower.includes('trail') ||
+          typeLower.includes('climbing') || typeLower.includes('water_sports') ||
+          typeLower.includes('mountain_biking')) {
+        return 20; // Higher bonus for adventure activities
+      }
+      // General parks get lower bonus
+      if (typeLower.includes('park') && !typeLower.includes('national')) {
+        return 3; // Very low bonus for general parks
+      }
+      return 5;
+    }
+    
+    // Adventure activities get higher bonus (for outdoors-adventure trip type)
+    if (typeLower.includes('hiking_trail') || typeLower.includes('trail') ||
+        typeLower.includes('climbing') || typeLower.includes('water_sports') ||
+        typeLower.includes('mountain_biking')) {
+      return 20; // Higher bonus for adventure activities
+    }
+    
+    // Museums are generally more popular
+    if (typeLower.includes('museum')) {
+      return 15;
+    }
+    
+    // Historic sites and monuments are also popular
+    if (typeLower.includes('historic') || typeLower.includes('monument')) {
+      return 10;
+    }
+    
+    // Zoos and aquariums are popular family destinations
+    if (typeLower.includes('zoo') || typeLower.includes('aquarium')) {
+      return 12;
+    }
+    
+    // General parks get lower bonus (not as adventurous)
+    if (typeLower.includes('park') && !typeLower.includes('national')) {
+      return 5; // Lower bonus for general parks
+    }
+    
+    return 5; // Default small bonus
   }
 
   /**

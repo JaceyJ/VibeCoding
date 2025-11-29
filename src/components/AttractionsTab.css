@@ -1,6 +1,62 @@
 .attractions-tab-container {
   width: 100%;
-  min-height: 200px;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.attractions-tab-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  background-color: #f9fafb;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+}
+
+.attractions-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 0.25rem 0;
+}
+
+.attractions-description {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.attractions-tab-button {
+  padding: 0.75rem 1.25rem;
+  border-radius: 9999px;
+  border: none;
+  background-color: #8b5cf6;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);
+  transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
+}
+
+.attractions-tab-button:hover:not(:disabled) {
+  background-color: #7c3aed;
+  box-shadow: 0 4px 6px rgba(124, 58, 237, 0.35);
+  transform: translateY(-1px);
+}
+
+.attractions-tab-button:disabled {
+  opacity: 0.6;
+  cursor: default;
+  box-shadow: none;
 }
 
 .attractions-placeholder {
@@ -8,7 +64,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 3rem 2rem;
+  padding: 2.5rem 2rem;
   text-align: center;
   background-color: #f9fafb;
   border-radius: 0.75rem;
@@ -20,22 +76,105 @@
   margin-bottom: 1rem;
 }
 
-.attractions-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #111827;
-  margin: 0 0 0.5rem 0;
-}
-
-.attractions-description {
-  font-size: 1rem;
-  color: #6b7280;
-  margin: 0 0 0.5rem 0;
-}
-
 .attractions-note {
   font-size: 0.875rem;
   color: #9ca3af;
   margin: 0;
+}
+
+.attractions-results-summary {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.attractions-day {
+  padding: 1.25rem 1.5rem;
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+}
+
+.attractions-day-title {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.attractions-day-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.attractions-day-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.attractions-day-item-main {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.attractions-day-item-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.attractions-day-item-type {
+  font-size: 0.8rem;
+  color: #6b7280;
+  padding: 0.1rem 0.4rem;
+  border-radius: 9999px;
+  background-color: #eff6ff;
+}
+
+.attractions-day-item-meta {
+  font-size: 0.8rem;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.attractions-day-item-rating {
+  color: #f59e0b;
+}
+
+.attractions-day-item-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  text-decoration: none;
+  color: inherit;
+  padding: 0.25rem 0.4rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.15s ease, transform 0.05s ease;
+}
+
+.attractions-day-item-link:hover {
+  background-color: #f3f4f6;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+  .attractions-tab-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .attractions-tab-button {
+    width: 100%;
+    justify-content: center;
+  }
 }
 

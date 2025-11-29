@@ -442,7 +442,7 @@ export const OvernightStopsList: React.FC<OvernightStopsListProps> = ({
                             </div>
                           ) : (
                             <p className="category-placeholder">
-                              Click "Search" to find attractions and points of interest in this area.
+                              Click "Search" above to find attractions and points of interest in this area.
                             </p>
                           )}
                         </div>

@@ -17,12 +17,20 @@ L.Icon.Default.mergeOptions({
   shadowUrl: iconShadow,
 });
 
+interface AttractionMarker {
+  lat: number;
+  lon: number;
+  name: string;
+  day?: number;
+}
+
 interface RouteMapProps {
   start: RoutePoint;
   end: RoutePoint;
   route: RouteData | null;
   overnightStops?: OvernightStop[];
   isLoading?: boolean;
+  attractionMarkers?: AttractionMarker[];
 }
 
 /**
@@ -34,11 +42,12 @@ export const RouteMap: React.FC<RouteMapProps> = ({
   end,
   route,
   overnightStops = [],
-  isLoading = false
+  isLoading = false,
+  attractionMarkers = []
 }) => {
   const mapRef = useRef<L.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const markersRef = useRef<L.Marker[]>([]);
+  const markersRef = useRef<L.Layer[]>([]);
   const routeLayerRef = useRef<L.Polyline | null>(null);
 
   useEffect(() => {
@@ -59,8 +68,8 @@ export const RouteMap: React.FC<RouteMapProps> = ({
 
     const map = mapRef.current;
 
-    // Clear existing markers
-    markersRef.current.forEach(marker => marker.remove());
+    // Clear existing markers (start/end, stops, attractions)
+    markersRef.current.forEach(layer => layer.remove());
     markersRef.current = [];
 
     // Add start marker
@@ -95,6 +104,24 @@ export const RouteMap: React.FC<RouteMapProps> = ({
       markersRef.current.push(stopMarker);
     });
 
+    // Add attraction markers (small purple dots)
+    attractionMarkers.forEach((attr) => {
+      const marker = L.circleMarker([attr.lat, attr.lon], {
+        radius: 6,
+        color: '#8b5cf6',
+        weight: 2,
+        fillColor: '#8b5cf6',
+        fillOpacity: 0.8
+      })
+        .addTo(map)
+        .bindPopup(
+          `<strong>${attr.name}</strong>` +
+          (attr.day ? `<br/>Day ${attr.day}` : '')
+        );
+
+      markersRef.current.push(marker);
+    });
+
     // Clear existing route
     if (routeLayerRef.current) {
       routeLayerRef.current.remove();
@@ -121,6 +148,12 @@ export const RouteMap: React.FC<RouteMapProps> = ({
           bounds.extend([stop.city.lat, stop.city.lon]);
         });
       }
+      // Include attraction markers in bounds
+      if (attractionMarkers.length > 0) {
+        attractionMarkers.forEach(attr => {
+          bounds.extend([attr.lat, attr.lon]);
+        });
+      }
       map.fitBounds(bounds, { padding: [50, 50] });
     } else {
       // Fit map to show both markers and overnight stops
@@ -130,6 +163,11 @@ export const RouteMap: React.FC<RouteMapProps> = ({
       if (overnightStops.length > 0) {
         overnightStops.forEach(stop => {
           bounds.extend([stop.city.lat, stop.city.lon]);
+        });
+      }
+      if (attractionMarkers.length > 0) {
+        attractionMarkers.forEach(attr => {
+          bounds.extend([attr.lat, attr.lon]);
         });
       }
       map.fitBounds(bounds, { padding: [50, 50] });
@@ -142,7 +180,7 @@ export const RouteMap: React.FC<RouteMapProps> = ({
         mapRef.current = null;
       }
     };
-  }, [start, end, route, overnightStops]);
+  }, [start, end, route, overnightStops, attractionMarkers]);
 
   return (
     <div className="route-map-container">

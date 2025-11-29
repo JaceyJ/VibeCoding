@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { RouteMap } from './RouteMap';
 import { RouteService, RoutePoint, RouteData } from '../services/RouteService';
 import { selectOvernightStops, OvernightStop, ProgressCallback } from '../services/OvernightStopService';
+import { RouteAttractionService, DayAttractionResult } from '../services/RouteAttractionService';
 import { OvernightStopsList } from './OvernightStopsList';
 import { AttractionsTab } from './AttractionsTab';
 import { Tabs } from './Tabs';
@@ -39,6 +40,8 @@ export const RouteDisplay: React.FC<RouteDisplayProps> = ({
   const [isCalculatingStops, setIsCalculatingStops] = useState(false);
   const [progress, setProgress] = useState({ current: 0, total: 100, message: '' });
   const [error, setError] = useState<string | null>(null);
+  const [isSearchingRouteAttractions, setIsSearchingRouteAttractions] = useState(false);
+  const [routeAttractions, setRouteAttractions] = useState<DayAttractionResult[]>([]);
 
   useEffect(() => {
     const fetchRoute = async () => {
@@ -120,6 +123,42 @@ export const RouteDisplay: React.FC<RouteDisplayProps> = ({
     }
   }, [startLocation, endLocation, minDailyDrivingTime, maxDailyDrivingTime]);
 
+  const handleFindAttractionsAlongRoute = async () => {
+    if (!route) {
+      console.warn('[RouteDisplay] Cannot find attractions: route is not loaded yet');
+      return;
+    }
+
+    setIsSearchingRouteAttractions(true);
+    setRouteAttractions([]);
+
+    try {
+      // Derive totalDays from overnight stops if available; otherwise fall back to 1
+      const totalDays = overnightStops.length > 0 ? overnightStops.length : 1;
+      const results: DayAttractionResult[] = [];
+
+      for (let day = 1; day <= totalDays; day++) {
+        const dayResult = await RouteAttractionService.findAttractionsForDay({
+          route,
+          day,
+          totalDays,
+          tripType,
+          simplifyToleranceKm: 2,
+          searchIntervalKm: 30,
+          searchRadiusKm: 25
+        });
+        results.push(dayResult);
+      }
+
+      setRouteAttractions(results);
+      console.log('[RouteDisplay] Route attractions by day:', results);
+    } catch (err) {
+      console.error('[RouteDisplay] Error finding attractions along route:', err);
+    } finally {
+      setIsSearchingRouteAttractions(false);
+    }
+  };
+
   if (!startPoint || !endPoint) {
     return (
       <div className="route-display-container">
@@ -160,6 +199,14 @@ export const RouteDisplay: React.FC<RouteDisplayProps> = ({
         route={route}
         overnightStops={overnightStops}
         isLoading={isLoading}
+        attractionMarkers={routeAttractions.flatMap((dayResult) =>
+          dayResult.attractions.map((a) => ({
+            lat: a.lat,
+            lon: a.lon,
+            name: a.name,
+            day: dayResult.day
+          }))
+        )}
       />
       {isCalculatingStops && (
         <div className="overnight-stops-progress">
@@ -187,7 +234,14 @@ export const RouteDisplay: React.FC<RouteDisplayProps> = ({
             {
               id: 'attractions',
               label: 'Attractions',
-              content: <AttractionsTab tripType={tripType} />
+              content: (
+                <AttractionsTab
+                  tripType={tripType}
+                  onFindAttractions={handleFindAttractionsAlongRoute}
+                  isSearching={isSearchingRouteAttractions}
+                  dayAttractions={routeAttractions}
+                />
+              )
             }
           ]}
           defaultTab="overnight-stops"

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { RouteMap } from './RouteMap';
 import { RouteService, RoutePoint, RouteData } from '../services/RouteService';
-import { selectOvernightStops, OvernightStop, ProgressCallback } from '../services/OvernightStopService';
+import { selectOvernightStops, OvernightStop, ProgressCallback, LodgingType } from '../services/OvernightStopService';
 import { RouteAttractionService, DayAttractionResult } from '../services/RouteAttractionService';
 import { OvernightStopsList } from './OvernightStopsList';
 import { AttractionsTab } from './AttractionsTab';
@@ -15,6 +15,7 @@ interface RouteDisplayProps {
   endLocation: string;
   startDate: string;
   tripType: TripType;
+  lodgingType: LodgingType;
   minDailyDrivingTime: number;
   maxDailyDrivingTime: number;
 }
@@ -29,6 +30,7 @@ export const RouteDisplay: React.FC<RouteDisplayProps> = ({
   endLocation,
   startDate,
   tripType,
+  lodgingType,
   minDailyDrivingTime,
   maxDailyDrivingTime
 }) => {
@@ -99,7 +101,8 @@ export const RouteDisplay: React.FC<RouteDisplayProps> = ({
               routeData,
               minDailyDrivingTime,
               maxDailyDrivingTime,
-              progressCallback
+              progressCallback,
+              lodgingType
             );
             setOvernightStops(stops);
             setProgress({ current: 100, total: 100, message: 'Complete!' });
@@ -191,6 +194,12 @@ export const RouteDisplay: React.FC<RouteDisplayProps> = ({
               {Math.floor(route.duration / 3600)}h {Math.floor((route.duration % 3600) / 60)}m
             </span>
           </div>
+          <div className="route-info-item">
+            <span className="route-info-label">Lodging:</span>
+            <span className="route-info-value">
+              {lodgingType === 'hotel' ? 'Hotels' : 'Campsites'}
+            </span>
+          </div>
         </div>
       )}
       <RouteMap
@@ -224,7 +233,12 @@ export const RouteDisplay: React.FC<RouteDisplayProps> = ({
               id: 'overnight-stops',
               label: 'Overnight Stops',
               content: overnightStops.length > 0 ? (
-                <OvernightStopsList stops={overnightStops} startDate={startDate} tripType={tripType} />
+                <OvernightStopsList
+                  stops={overnightStops}
+                  startDate={startDate}
+                  tripType={tripType}
+                  lodgingType={lodgingType}
+                />
               ) : (
                 <div className="no-stops-message">
                   <p>No overnight stops calculated yet.</p>

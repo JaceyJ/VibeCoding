@@ -32,6 +32,7 @@ const App: React.FC = () => {
               endLocation={tripData.endLocation}
               startDate={tripData.startDate}
               tripType={tripData.tripType}
+              lodgingType={tripData.lodgingType}
               minDailyDrivingTime={tripData.minDailyDrivingTime}
               maxDailyDrivingTime={tripData.maxDailyDrivingTime}
             />

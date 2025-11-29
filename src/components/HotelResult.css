@@ -1,15 +1,17 @@
 .hotel-result {
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
+  background-color: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: var(--radius-md);
   padding: 1rem;
   margin-bottom: 0.75rem;
-  transition: box-shadow 0.2s, border-color 0.2s;
+  transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
+  box-shadow: 0 12px 28px rgba(2, 6, 23, 0.4);
 }
 
 .hotel-result:hover {
-  border-color: #3b82f6;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border-color: var(--color-accent);
+  box-shadow: 0 18px 35px rgba(2, 6, 23, 0.6);
+  transform: translateY(-2px);
 }
 
 .hotel-result-header {
@@ -24,12 +26,13 @@
   justify-content: center;
   width: 2rem;
   height: 2rem;
-  background-color: #3b82f6;
-  color: #ffffff;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: #f8fafc;
   border-radius: 50%;
   font-weight: 700;
   font-size: 0.875rem;
   flex-shrink: 0;
+  box-shadow: 0 10px 20px rgba(79, 70, 229, 0.45);
 }
 
 .hotel-info {
@@ -39,13 +42,13 @@
 .hotel-name {
   font-size: 1rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-text);
   margin: 0 0 0.25rem 0;
 }
 
 .hotel-address {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-muted);
   margin: 0;
 }
 
@@ -55,7 +58,7 @@
   gap: 1rem;
   margin-bottom: 0.75rem;
   padding-top: 0.75rem;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
 }
 
 .hotel-detail-item {
@@ -67,7 +70,7 @@
 .hotel-detail-label {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--color-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -75,7 +78,7 @@
 .hotel-detail-value {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-text);
 }
 
 .hotel-price-range {
@@ -84,7 +87,7 @@
 }
 
 .hotel-price {
-  color: #10b981;
+  color: #4ade80;
   font-size: 1.125rem;
 }
 
@@ -93,7 +96,7 @@
   gap: 1rem;
   margin-top: 0.75rem;
   padding-top: 0.75rem;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid rgba(148, 163, 184, 0.15);
   flex-wrap: wrap;
 }
 
@@ -103,22 +106,22 @@
   gap: 0.25rem;
   font-size: 0.875rem;
   font-weight: 600;
-  color: #3b82f6;
+  color: var(--color-accent);
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .hotel-link:hover {
-  color: #2563eb;
+  color: var(--color-accent-strong);
   text-decoration: underline;
 }
 
 .hotel-link-primary {
-  color: #10b981;
+  color: #4ade80;
   font-weight: 700;
 }
 
 .hotel-link-primary:hover {
-  color: #059669;
+  color: #22c55e;
 }
 

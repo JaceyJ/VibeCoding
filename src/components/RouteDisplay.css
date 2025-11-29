@@ -7,10 +7,11 @@
   display: flex;
   gap: 2rem;
   padding: 1rem 1.5rem;
-  background-color: #f9fafb;
-  border-radius: 0.5rem;
+  background-color: rgba(15, 23, 42, 0.75);
+  border-radius: var(--radius-md);
   margin-bottom: 1rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  box-shadow: 0 15px 35px rgba(1, 4, 9, 0.55);
 }
 
 .route-info-item {
@@ -22,7 +23,7 @@
 .route-info-label {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--color-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -30,7 +31,7 @@
 .route-info-value {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-text);
 }
 
 .route-display-loading {
@@ -39,36 +40,37 @@
   align-items: center;
   justify-content: center;
   padding: 3rem;
-  background-color: #f9fafb;
-  border-radius: 0.5rem;
-  border: 1px solid #e5e7eb;
+  background-color: rgba(6, 10, 21, 0.9);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  box-shadow: var(--shadow-card);
 }
 
 .route-display-spinner {
   width: 3rem;
   height: 3rem;
-  border: 4px solid #e5e7eb;
-  border-top-color: #3b82f6;
+  border: 4px solid rgba(148, 163, 184, 0.3);
+  border-top-color: var(--color-accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin-bottom: 1rem;
 }
 
 .route-display-loading p {
-  color: #374151;
+  color: var(--color-text);
   font-weight: 500;
 }
 
 .route-display-error {
   padding: 1rem 1.5rem;
-  background-color: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: 0.5rem;
+  background-color: rgba(127, 29, 29, 0.2);
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  border-radius: var(--radius-md);
   margin-top: 1rem;
 }
 
 .route-display-error p {
-  color: #dc2626;
+  color: #fecdd3;
   font-weight: 500;
   margin: 0;
 }
@@ -76,10 +78,10 @@
 .overnight-stops-progress {
   margin-top: 1.5rem;
   padding: 1.5rem;
-  background-color: #ffffff;
-  border: 2px solid #e5e7eb;
-  border-radius: 0.75rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background-color: rgba(8, 13, 24, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 18px 40px rgba(1, 4, 9, 0.6);
 }
 
 @keyframes spin {
@@ -91,9 +93,9 @@
 .no-stops-message {
   padding: 2rem;
   text-align: center;
-  color: #6b7280;
-  background-color: #f9fafb;
-  border-radius: 0.75rem;
-  border: 1px solid #e5e7eb;
+  color: var(--color-muted);
+  background-color: rgba(15, 23, 42, 0.75);
+  border-radius: var(--radius-lg);
+  border: 1px dashed rgba(148, 163, 184, 0.25);
 }
 

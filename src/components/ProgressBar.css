@@ -13,29 +13,29 @@
 .progress-bar-message {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #374151;
+  color: var(--color-muted);
 }
 
 .progress-bar-percentage {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #3b82f6;
+  color: var(--color-accent);
 }
 
 .progress-bar-track {
   width: 100%;
   height: 8px;
-  background-color: #e5e7eb;
+  background-color: rgba(148, 163, 184, 0.25);
   border-radius: 4px;
   overflow: hidden;
 }
 
 .progress-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+  background: linear-gradient(90deg, #2563eb 0%, #7c3aed 100%);
   border-radius: 4px;
   transition: width 0.3s ease;
-  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 10px rgba(99, 102, 241, 0.35);
 }
 
 

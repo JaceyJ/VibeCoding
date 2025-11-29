@@ -8,6 +8,8 @@ import { RouteData, RoutePoint } from './RouteService';
 import { haversineDistance } from '../utils/GeographicUtils';
 import { findNearbyCities, City } from './CityService';
 
+export type LodgingType = 'hotel' | 'campsite';
+
 export interface OvernightStop {
   day: number;
   city: {
@@ -20,6 +22,7 @@ export interface OvernightStop {
   arrivalTimeSec: number; // Cumulative time in seconds when arriving at this stop
   cumulativeDistance: number; // Cumulative distance in kilometers
   routePointIndex: number; // Index of the closest route point
+  lodgingType?: LodgingType; // Preferred lodging type for this stop
 }
 
 interface RoutePointWithMetrics {
@@ -162,7 +165,8 @@ function scoreCity(
   city: City,
   cityTime: number,
   idealCenter: number,
-  detourTime: number
+  detourTime: number,
+  lodgingType: LodgingType
 ): number {
   // Closeness to ideal time (negative penalty for being far from ideal)
   const timePenalty = -Math.abs(cityTime - idealCenter) / 3600; // Convert to hours for scaling
@@ -170,8 +174,29 @@ function scoreCity(
   // Detour penalty (negative penalty for long detours)
   const detourPenalty = -detourTime / 3600; // Convert to hours
 
-  // Place type bonus (preference for larger places based on OSM hierarchy)
-  const placeTypeBonus = getPlaceTypeWeight(city.placeType);
+  // Place type bonus (preference based on lodging type)
+  let placeTypeBonus = getPlaceTypeWeight(city.placeType);
+
+  // Adjust weights for campsite preference: favor smaller, more rural places
+  if (lodgingType === 'campsite') {
+    switch (city.placeType) {
+      case 'village':
+      case 'hamlet':
+        placeTypeBonus += 1.0; // boost small places
+        break;
+      case 'locality':
+        placeTypeBonus += 0.5;
+        break;
+      case 'city':
+        placeTypeBonus -= 2.0; // penalize big cities for camping
+        break;
+      case 'town':
+        placeTypeBonus -= 0.5;
+        break;
+      default:
+        break;
+    }
+  }
 
   // Final score
   const finalScore = timePenalty + detourPenalty + placeTypeBonus;
@@ -199,6 +224,7 @@ async function findBestStopForDay(
   idealCenter: number,
   routeDistance: number,
   routeDuration: number,
+  lodgingType: LodgingType,
   onProgress?: ProgressCallback
 ): Promise<OvernightStop | null> {
   // Get subset of route points within the ideal time window
@@ -270,7 +296,7 @@ async function findBestStopForDay(
 
         // Score the city
         citiesScored++;
-        const score = scoreCity(city, cityTime, idealCenter, detourTime);
+        const score = scoreCity(city, cityTime, idealCenter, detourTime, lodgingType);
         console.log(`[OvernightStopService] Day ${day}: Scored ${city.name} (${city.placeType}, detour: ${city.distanceFromRoute.toFixed(1)}km) - Score: ${score.toFixed(2)}`);
 
         if (score > bestScore) {
@@ -287,7 +313,8 @@ async function findBestStopForDay(
             },
             arrivalTimeSec: cityTime,
             cumulativeDistance: routePoint.cumulativeDistance,
-            routePointIndex: routePoint.index
+            routePointIndex: routePoint.index,
+            lodgingType
           };
         }
       }
@@ -331,7 +358,8 @@ export async function selectOvernightStops(
   route: RouteData,
   minDailyHours: number,
   maxDailyHours: number,
-  onProgress?: ProgressCallback
+  onProgress?: ProgressCallback,
+  lodgingType: LodgingType = 'hotel'
 ): Promise<OvernightStop[]> {
   console.log('[OvernightStopService] Starting overnight stop calculation...');
   console.log(`[OvernightStopService] Route: ${route.distance.toFixed(1)} km, ${(route.duration / 3600).toFixed(1)} hours`);
@@ -389,6 +417,7 @@ export async function selectOvernightStops(
       idealCenter,
       route.distance,
       route.duration,
+      lodgingType,
       (subProgress) => {
         const totalProgress = dayProgress + (subProgress.current * progressPerDay / 100);
         onProgress?.({

@@ -1,15 +1,17 @@
 .food-result {
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
+  background-color: rgba(12, 18, 33, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: var(--radius-md);
   padding: 1rem;
   margin-bottom: 0.75rem;
-  transition: box-shadow 0.2s, border-color 0.2s;
+  transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
+  box-shadow: 0 12px 28px rgba(2, 6, 23, 0.4);
 }
 
 .food-result:hover {
   border-color: #10b981;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 18px 35px rgba(2, 6, 23, 0.6);
+  transform: translateY(-2px);
 }
 
 .food-result-header {
@@ -24,12 +26,13 @@
   justify-content: center;
   width: 2rem;
   height: 2rem;
-  background-color: #10b981;
-  color: #ffffff;
+  background: linear-gradient(135deg, #10b981, #34d399);
+  color: #f8fafc;
   border-radius: 50%;
   font-weight: 700;
   font-size: 0.875rem;
   flex-shrink: 0;
+  box-shadow: 0 10px 22px rgba(16, 185, 129, 0.45);
 }
 
 .food-info {
@@ -39,13 +42,13 @@
 .food-name {
   font-size: 1rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-text);
   margin: 0 0 0.25rem 0;
 }
 
 .food-address {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-muted);
   margin: 0;
 }
 
@@ -55,7 +58,7 @@
   gap: 1rem;
   margin-bottom: 0.75rem;
   padding-top: 0.75rem;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
 }
 
 .food-detail-item {
@@ -67,7 +70,7 @@
 .food-detail-label {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--color-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -75,7 +78,7 @@
 .food-detail-value {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-text);
 }
 
 .food-actions {
@@ -83,7 +86,7 @@
   gap: 1rem;
   margin-top: 0.75rem;
   padding-top: 0.75rem;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid rgba(148, 163, 184, 0.15);
 }
 
 .food-link {
@@ -92,13 +95,13 @@
   gap: 0.25rem;
   font-size: 0.875rem;
   font-weight: 600;
-  color: #10b981;
+  color: #34d399;
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .food-link:hover {
-  color: #059669;
+  color: #10b981;
   text-decoration: underline;
 }
 

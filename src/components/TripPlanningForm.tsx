@@ -4,6 +4,8 @@ import { StartDateInput } from './StartDateInput';
 import { DrivingTimeInput } from './DrivingTimeInput';
 import { PlanTripButton } from './PlanTripButton';
 import { TripTypeSelector, TripType } from './TripTypeSelector';
+import { LodgingSettingsModal } from './LodgingSettingsModal';
+import type { LodgingType } from '../services/OvernightStopService';
 import './TripPlanningForm.css';
 
 export interface TripPlanningFormData {
@@ -11,6 +13,7 @@ export interface TripPlanningFormData {
   endLocation: string;
   startDate: string;
   tripType: TripType;
+  lodgingType: LodgingType;
   minDailyDrivingTime: number;
   maxDailyDrivingTime: number;
 }
@@ -32,9 +35,11 @@ export const TripPlanningForm: React.FC<TripPlanningFormProps> = ({
     endLocation: '',
     startDate: '',
     tripType: 'all',
+    lodgingType: 'hotel',
     minDailyDrivingTime: 4,
     maxDailyDrivingTime: 8
   });
+  const [isLodgingSettingsOpen, setIsLodgingSettingsOpen] = useState(false);
 
   const handleStartLocationChange = (value: string) => {
     setFormData(prev => ({ ...prev, startLocation: value }));
@@ -50,6 +55,10 @@ export const TripPlanningForm: React.FC<TripPlanningFormProps> = ({
 
   const handleTripTypeChange = (tripType: TripType) => {
     setFormData(prev => ({ ...prev, tripType }));
+  };
+
+  const handleLodgingTypeChange = (lodgingType: LodgingType) => {
+    setFormData(prev => ({ ...prev, lodgingType }));
   };
 
   const handleMinDrivingTimeChange = (value: number) => {
@@ -132,7 +141,27 @@ export const TripPlanningForm: React.FC<TripPlanningFormProps> = ({
           onClick={handleSubmit}
           disabled={!isFormValid()}
         />
+        <div className="advanced-settings-row">
+          <button
+            type="button"
+            className="advanced-settings-link"
+            onClick={() => setIsLodgingSettingsOpen(true)}
+          >
+            Advanced settings
+          </button>
+          <span className="advanced-settings-summary">
+            {formData.lodgingType === 'hotel'
+              ? 'Overnight stays: Hotels'
+              : 'Overnight stays: Campsites'}
+          </span>
+        </div>
       </form>
+      <LodgingSettingsModal
+        isOpen={isLodgingSettingsOpen}
+        onClose={() => setIsLodgingSettingsOpen(false)}
+        value={formData.lodgingType}
+        onChange={handleLodgingTypeChange}
+      />
     </div>
   );
 };

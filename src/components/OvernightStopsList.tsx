@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { OvernightStop } from '../services/OvernightStopService';
+import { OvernightStop, LodgingType } from '../services/OvernightStopService';
 import { HotelSearchModal, HotelSearchParams } from './HotelSearchModal';
 import { searchHotels, Hotel, calculateCheckInDate } from '../services/HotelService';
+import { CampsiteService } from '../services/CampsiteService';
 import { HotelResult } from './HotelResult';
 import { FoodSearchModal, FoodSearchParams } from './FoodSearchModal';
 import { FoodService, FoodPlace } from '../services/FoodService';
@@ -15,6 +16,7 @@ interface OvernightStopsListProps {
   stops: OvernightStop[];
   startDate: string;
   tripType: TripType;
+  lodgingType: LodgingType;
 }
 
 type CategoryTab = 'hotels' | 'food' | 'attractions';
@@ -26,7 +28,8 @@ type CategoryTab = 'hotels' | 'food' | 'attractions';
 export const OvernightStopsList: React.FC<OvernightStopsListProps> = ({
   stops,
   startDate,
-  tripType
+  tripType,
+  lodgingType
 }) => {
   const [expandedStops, setExpandedStops] = useState<Set<number>>(new Set());
   const [activeCategory, setActiveCategory] = useState<Map<number, CategoryTab>>(
@@ -43,7 +46,6 @@ export const OvernightStopsList: React.FC<OvernightStopsListProps> = ({
   const [currentFoodStopDay, setCurrentFoodStopDay] = useState<number | null>(null);
   const [foodResults, setFoodResults] = useState<Map<number, FoodPlace[]>>(new Map());
   const [isSearchingFood, setIsSearchingFood] = useState<Map<number, boolean>>(new Map());
-  const [foodSearchParams, setFoodSearchParams] = useState<Map<number, FoodSearchParams>>(new Map());
   
   // Attraction search state
   const [attractionResults, setAttractionResults] = useState<Map<number, Attraction[]>>(new Map());
@@ -152,15 +154,24 @@ export const OvernightStopsList: React.FC<OvernightStopsListProps> = ({
 
     try {
       const center = { lat: stop.city.lat, lon: stop.city.lon };
-      const hotels = await searchHotels(center, params, 48.28, stop.city.placeType);
-      
+
+      // When lodgingType is 'campsite', search for campsites instead of hotels.
+      const results =
+        lodgingType === 'campsite'
+          ? await CampsiteService.searchCampsites(center, 60)
+          : await searchHotels(center, params, 48.28, stop.city.placeType);
+
       setHotelResults(prev => {
         const newMap = new Map(prev);
-        newMap.set(currentStopDay, hotels);
+        newMap.set(currentStopDay, results);
         return newMap;
       });
 
-      console.log(`[OvernightStopsList] Found ${hotels.length} hotels for day ${currentStopDay}`);
+      console.log(
+        `[OvernightStopsList] Found ${results.length} ${
+          lodgingType === 'campsite' ? 'campsites' : 'hotels'
+        } for day ${currentStopDay}`
+      );
     } catch (error) {
       console.error(`[OvernightStopsList] Error searching hotels:`, error);
     } finally {
@@ -185,13 +196,6 @@ export const OvernightStopsList: React.FC<OvernightStopsListProps> = ({
     }
 
     console.log(`[OvernightStopsList] Starting food search for day ${currentFoodStopDay}`, params);
-
-    // Store search params for this stop (for potential future use)
-    setFoodSearchParams(prev => {
-      const newMap = new Map(prev);
-      newMap.set(currentFoodStopDay, params);
-      return newMap;
-    });
 
     setIsSearchingFood(prev => {
       const newMap = new Map(prev);
@@ -321,8 +325,10 @@ export const OvernightStopsList: React.FC<OvernightStopsListProps> = ({
                         className={`category-tab ${(activeCategory.get(stop.day) || 'hotels') === 'hotels' ? 'active' : ''}`}
                         onClick={() => setCategory(stop.day, 'hotels')}
                       >
-                        <span className="category-icon">🏨</span>
-                        <span className="category-label">Hotels</span>
+                        <span className="category-icon">{lodgingType === 'campsite' ? '⛺' : '🏨'}</span>
+                        <span className="category-label">
+                          {lodgingType === 'campsite' ? 'Campsites' : 'Hotels'}
+                        </span>
                       </button>
                       <button
                         className={`category-tab ${(activeCategory.get(stop.day) || 'hotels') === 'food' ? 'active' : ''}`}
@@ -345,13 +351,18 @@ export const OvernightStopsList: React.FC<OvernightStopsListProps> = ({
                           {isSearchingHotels.get(stop.day) ? (
                             <div className="search-loading">
                               <div className="search-spinner"></div>
-                              <p>Searching for hotels...</p>
+                              <p>
+                                {lodgingType === 'campsite'
+                                  ? 'Searching for campsites...'
+                                  : 'Searching for hotels...'}
+                              </p>
                             </div>
                           ) : hotelResults.get(stop.day) && hotelResults.get(stop.day)!.length > 0 ? (
                             <div className="hotels-results">
                               <div className="results-header">
                                 <p className="results-count">
-                                  Found {hotelResults.get(stop.day)!.length} hotels
+                                  Found {hotelResults.get(stop.day)!.length}{' '}
+                                  {lodgingType === 'campsite' ? 'campsites' : 'hotels'}
                                   {startDate && (
                                     <span className="check-in-date">
                                       {' '}for {getCheckInDate(stop.day)}
@@ -361,7 +372,10 @@ export const OvernightStopsList: React.FC<OvernightStopsListProps> = ({
                               </div>
                               {hotelResults.get(stop.day)!.map((hotel, index) => {
                                 const searchParams = hotelSearchParams.get(stop.day);
-                                const numberOfDays = searchParams?.numberOfDays || searchParams?.extendStay ? (searchParams.numberOfDays || 1) : 1;
+                                const numberOfDays =
+                                  searchParams?.numberOfDays || searchParams?.extendStay
+                                    ? searchParams.numberOfDays || 1
+                                    : 1;
                                 return (
                                   <HotelResult 
                                     key={`${hotel.lat}-${hotel.lon}-${index}`} 
@@ -374,7 +388,9 @@ export const OvernightStopsList: React.FC<OvernightStopsListProps> = ({
                             </div>
                           ) : (
                             <p className="category-placeholder">
-                              Click "Search" to find hotels in this area.
+                              {lodgingType === 'campsite'
+                                ? 'Click "Search" to find campsites in this area.'
+                                : 'Click "Search" to find hotels in this area.'}
                             </p>
                           )}
                         </div>

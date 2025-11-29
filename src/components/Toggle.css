@@ -5,11 +5,13 @@
   padding: 0.75rem 1rem;
   cursor: pointer;
   transition: background-color 0.2s;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-md);
+  background-color: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.2);
 }
 
 .toggle-container:hover {
-  background-color: #f9fafb;
+  background-color: rgba(30, 41, 59, 0.6);
 }
 
 .toggle-label-content {
@@ -26,7 +28,7 @@
 .toggle-label {
   font-size: 0.9375rem;
   font-weight: 500;
-  color: #374151;
+  color: var(--color-text);
 }
 
 .toggle-switch-wrapper {
@@ -50,7 +52,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #cbd5e1;
+  background-color: rgba(148, 163, 184, 0.5);
   transition: 0.3s;
   border-radius: 24px;
 }
@@ -69,7 +71,7 @@
 }
 
 .toggle-slider.checked {
-  background-color: #3b82f6;
+  background: linear-gradient(120deg, #2563eb, #7c3aed);
 }
 
 .toggle-slider.checked:before {
@@ -77,6 +79,6 @@
 }
 
 .toggle-input:focus + .toggle-slider {
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
 }
 

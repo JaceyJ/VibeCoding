@@ -88,3 +88,12 @@
   }
 }
 
+.no-stops-message {
+  padding: 2rem;
+  text-align: center;
+  color: #6b7280;
+  background-color: #f9fafb;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+}
+

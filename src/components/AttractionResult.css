@@ -1,0 +1,124 @@
+.attraction-result {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.attraction-result:hover {
+  border-color: #8b5cf6;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.attraction-result-header {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.attraction-rank {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  background-color: #8b5cf6;
+  color: #ffffff;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
+.attraction-info {
+  flex: 1;
+}
+
+.attraction-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 0.25rem 0;
+}
+
+.attraction-address {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.attraction-result-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f3f4f6;
+}
+
+.attraction-detail-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.attraction-detail-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.attraction-detail-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.attraction-description {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0 0 0.75rem 0;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.attraction-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f3f4f6;
+}
+
+.attraction-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #8b5cf6;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.attraction-link:hover {
+  color: #7c3aed;
+  text-decoration: underline;
+}
+
+.trip-type-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background-color: #ede9fe;
+  color: #7c3aed;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+  text-transform: capitalize;
+}
+

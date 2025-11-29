@@ -5,7 +5,7 @@
  */
 
 import { RouteData, RoutePoint } from './RouteService';
-import { Point, haversineDistance } from '../utils/GeographicUtils';
+import { haversineDistance } from '../utils/GeographicUtils';
 import { findNearbyCities, City } from './CityService';
 
 export interface OvernightStop {
@@ -390,7 +390,7 @@ export async function selectOvernightStops(
       route.distance,
       route.duration,
       (subProgress) => {
-        const totalProgress = dayProgress + (subProgress * progressPerDay / 100);
+        const totalProgress = dayProgress + (subProgress.current * progressPerDay / 100);
         onProgress?.({
           current: totalProgress,
           total: 100,

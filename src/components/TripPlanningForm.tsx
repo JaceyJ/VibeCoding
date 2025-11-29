@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { AutocompleteLocationInput } from './AutocompleteLocationInput';
+import { StartDateInput } from './StartDateInput';
 import { DrivingTimeInput } from './DrivingTimeInput';
 import { PlanTripButton } from './PlanTripButton';
+import { TripTypeSelector, TripType } from './TripTypeSelector';
 import './TripPlanningForm.css';
 
 export interface TripPlanningFormData {
   startLocation: string;
   endLocation: string;
+  startDate: string;
+  tripType: TripType;
   minDailyDrivingTime: number;
   maxDailyDrivingTime: number;
 }
@@ -26,6 +30,8 @@ export const TripPlanningForm: React.FC<TripPlanningFormProps> = ({
   const [formData, setFormData] = useState<TripPlanningFormData>({
     startLocation: '',
     endLocation: '',
+    startDate: '',
+    tripType: 'all',
     minDailyDrivingTime: 4,
     maxDailyDrivingTime: 8
   });
@@ -36,6 +42,14 @@ export const TripPlanningForm: React.FC<TripPlanningFormProps> = ({
 
   const handleEndLocationChange = (value: string) => {
     setFormData(prev => ({ ...prev, endLocation: value }));
+  };
+
+  const handleStartDateChange = (value: string) => {
+    setFormData(prev => ({ ...prev, startDate: value }));
+  };
+
+  const handleTripTypeChange = (tripType: TripType) => {
+    setFormData(prev => ({ ...prev, tripType }));
   };
 
   const handleMinDrivingTimeChange = (value: number) => {
@@ -86,6 +100,15 @@ export const TripPlanningForm: React.FC<TripPlanningFormProps> = ({
           value={formData.endLocation}
           onChange={handleEndLocationChange}
           placeholder="Enter destination"
+        />
+        <StartDateInput
+          label="Start Date"
+          value={formData.startDate}
+          onChange={handleStartDateChange}
+        />
+        <TripTypeSelector
+          value={formData.tripType}
+          onChange={handleTripTypeChange}
         />
         <DrivingTimeInput
           label="Minimum Daily Driving Time"

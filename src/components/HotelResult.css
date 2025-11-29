@@ -1,0 +1,124 @@
+.hotel-result {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.hotel-result:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.hotel-result-header {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.hotel-rank {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  background-color: #3b82f6;
+  color: #ffffff;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
+.hotel-info {
+  flex: 1;
+}
+
+.hotel-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 0.25rem 0;
+}
+
+.hotel-address {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.hotel-result-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f3f4f6;
+}
+
+.hotel-detail-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hotel-detail-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hotel-detail-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.hotel-price-range {
+  flex-basis: 100%;
+  margin-top: 0.5rem;
+}
+
+.hotel-price {
+  color: #10b981;
+  font-size: 1.125rem;
+}
+
+.hotel-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f3f4f6;
+  flex-wrap: wrap;
+}
+
+.hotel-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #3b82f6;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.hotel-link:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.hotel-link-primary {
+  color: #10b981;
+  font-weight: 700;
+}
+
+.hotel-link-primary:hover {
+  color: #059669;
+}
+

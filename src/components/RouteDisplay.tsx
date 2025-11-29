@@ -3,12 +3,17 @@ import { RouteMap } from './RouteMap';
 import { RouteService, RoutePoint, RouteData } from '../services/RouteService';
 import { selectOvernightStops, OvernightStop, ProgressCallback } from '../services/OvernightStopService';
 import { OvernightStopsList } from './OvernightStopsList';
+import { AttractionsTab } from './AttractionsTab';
+import { Tabs } from './Tabs';
 import { ProgressBar } from './ProgressBar';
+import { TripType } from './TripTypeSelector';
 import './RouteDisplay.css';
 
 interface RouteDisplayProps {
   startLocation: string;
   endLocation: string;
+  startDate: string;
+  tripType: TripType;
   minDailyDrivingTime: number;
   maxDailyDrivingTime: number;
 }
@@ -21,6 +26,8 @@ interface RouteDisplayProps {
 export const RouteDisplay: React.FC<RouteDisplayProps> = ({
   startLocation,
   endLocation,
+  startDate,
+  tripType,
   minDailyDrivingTime,
   maxDailyDrivingTime
 }) => {
@@ -163,8 +170,28 @@ export const RouteDisplay: React.FC<RouteDisplayProps> = ({
           />
         </div>
       )}
-      {!isCalculatingStops && overnightStops.length > 0 && (
-        <OvernightStopsList stops={overnightStops} />
+      {!isCalculatingStops && (
+        <Tabs
+          tabs={[
+            {
+              id: 'overnight-stops',
+              label: 'Overnight Stops',
+              content: overnightStops.length > 0 ? (
+                <OvernightStopsList stops={overnightStops} startDate={startDate} tripType={tripType} />
+              ) : (
+                <div className="no-stops-message">
+                  <p>No overnight stops calculated yet.</p>
+                </div>
+              )
+            },
+            {
+              id: 'attractions',
+              label: 'Attractions',
+              content: <AttractionsTab tripType={tripType} />
+            }
+          ]}
+          defaultTab="overnight-stops"
+        />
       )}
       {error && (
         <div className="route-display-error">

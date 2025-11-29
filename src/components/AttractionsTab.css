@@ -1,0 +1,41 @@
+.attractions-tab-container {
+  width: 100%;
+  min-height: 200px;
+}
+
+.attractions-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+  background-color: #f9fafb;
+  border-radius: 0.75rem;
+  border: 2px dashed #d1d5db;
+}
+
+.attractions-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.attractions-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 0.5rem 0;
+}
+
+.attractions-description {
+  font-size: 1rem;
+  color: #6b7280;
+  margin: 0 0 0.5rem 0;
+}
+
+.attractions-note {
+  font-size: 0.875rem;
+  color: #9ca3af;
+  margin: 0;
+}
+

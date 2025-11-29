@@ -30,6 +30,8 @@ const App: React.FC = () => {
             <RouteDisplay
               startLocation={tripData.startLocation}
               endLocation={tripData.endLocation}
+              startDate={tripData.startDate}
+              tripType={tripData.tripType}
               minDailyDrivingTime={tripData.minDailyDrivingTime}
               maxDailyDrivingTime={tripData.maxDailyDrivingTime}
             />

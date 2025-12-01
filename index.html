@@ -1,152 +1,15 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Roadtrip Planner</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trip Planning App</title>
   </head>
   <body>
-    <header class="app-header">
-      <h1>Roadtrip Planner</h1>
-      <p>Plan a multi-day roadtrip: map your route and discover things to do along the way.</p>
-    </header>
-
-    <main class="app-main">
-      <section class="controls">
-        <form id="planner-form">
-          <div class="form-row">
-            <label for="start">Start</label>
-            <div class="autocomplete">
-              <input id="start" name="start" type="text" placeholder="e.g., San Francisco, CA" autocomplete="off" required />
-              <div id="start-suggestions" class="suggestions" role="listbox" aria-label="Start suggestions"></div>
-            </div>
-          </div>
-          <div class="form-row">
-            <label for="end">End</label>
-            <div class="autocomplete">
-              <input id="end" name="end" type="text" placeholder="e.g., Seattle, WA" autocomplete="off" required />
-              <div id="end-suggestions" class="suggestions" role="listbox" aria-label="End suggestions"></div>
-            </div>
-          </div>
-          <div class="form-row">
-            <label for="days">Days</label>
-            <input id="days" name="days" type="number" min="1" max="30" value="3" required />
-          </div>
-          
-          <div class="form-section">
-            <label class="section-label">Trip Style</label>
-            <p class="section-description">How do you want to travel?</p>
-            <div class="trip-style-grid">
-              <label class="trip-style-option">
-                <input type="radio" name="tripStyle" value="lazy" checked />
-                <span class="trip-style-icon">😴</span>
-                <span class="trip-style-text">Lazy Trip</span>
-                <span class="trip-style-desc">Relaxed pace, fewer stops, more time at each location</span>
-              </label>
-              <label class="trip-style-option">
-                <input type="radio" name="tripStyle" value="sightseeing" />
-                <span class="trip-style-icon">👀</span>
-                <span class="trip-style-text">Sightseeing</span>
-                <span class="trip-style-desc">Lots of stops, roadside attractions, quick visits</span>
-              </label>
-              <label class="trip-style-option">
-                <input type="radio" name="tripStyle" value="quick" />
-                <span class="trip-style-icon">⚡</span>
-                <span class="trip-style-text">Quick Trip</span>
-                <span class="trip-style-desc">Efficient route, hotels in interesting places, minimal detours</span>
-              </label>
-            </div>
-          </div>
-          
-          <div class="form-section">
-            <label class="section-label">Activity Preferences</label>
-            <p class="section-description">Choose what interests you most to get personalized recommendations</p>
-            <div class="preferences-grid">
-              <label class="preference-option">
-                <input type="checkbox" name="preferences" value="outdoor" />
-                <span class="preference-icon">🏔️</span>
-                <span class="preference-text">Outdoor & Nature</span>
-                <span class="preference-desc">Hiking, parks, beaches, waterfalls</span>
-              </label>
-              <label class="preference-option">
-                <input type="checkbox" name="preferences" value="cultural" />
-                <span class="preference-icon">🏛️</span>
-                <span class="preference-text">Cultural & History</span>
-                <span class="preference-desc">Museums, historic sites, monuments</span>
-              </label>
-              <label class="preference-option">
-                <input type="checkbox" name="preferences" value="entertainment" />
-                <span class="preference-icon">🎭</span>
-                <span class="preference-text">Entertainment</span>
-                <span class="preference-desc">Theaters, stadiums, amusement parks</span>
-              </label>
-              <label class="preference-option">
-                <input type="checkbox" name="preferences" value="food" />
-                <span class="preference-icon">🍷</span>
-                <span class="preference-text">Food & Drink</span>
-                <span class="preference-desc">Wineries, breweries, local cuisine</span>
-              </label>
-              <label class="preference-option">
-                <input type="checkbox" name="preferences" value="family" />
-                <span class="preference-icon">👨‍👩‍👧‍👦</span>
-                <span class="preference-text">Family Friendly</span>
-                <span class="preference-desc">Zoos, aquariums, kid activities</span>
-              </label>
-              <label class="preference-option">
-                <input type="checkbox" name="preferences" value="adventure" />
-                <span class="preference-icon">🎢</span>
-                <span class="preference-text">Adventure & Sports</span>
-                <span class="preference-desc">Sports venues, adventure activities</span>
-              </label>
-            </div>
-          </div>
-          
-          <div class="form-actions">
-            <button type="submit">Plan Trip</button>
-          </div>
-        </form>
-        <div id="status" class="status" aria-live="polite"></div>
-        <div id="progress-container" class="progress-container" style="display: none;">
-          <div class="progress-bar">
-            <div id="progress-fill" class="progress-fill"></div>
-          </div>
-          <div id="progress-text" class="progress-text"></div>
-        </div>
-      </section>
-
-      <section class="layout">
-        <div class="map-container">
-          <div id="map"></div>
-          <div id="detailed-itinerary" class="detailed-itinerary-container"></div>
-        </div>
-        <aside id="sidebar">
-          <h2>Trip Overview</h2>
-          <div id="trip-overview"></div>
-          <h2>Things to do</h2>
-          <div id="poi-list"></div>
-        </aside>
-      </section>
-    </main>
-
-    <footer class="app-footer">
-      <small>
-        Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors.
-        Routing by <a href="https://project-osrm.org/" target="_blank" rel="noopener">OSRM</a>.
-        Geocoding by <a href="https://nominatim.org/" target="_blank" rel="noopener">Nominatim</a>.
-        POIs from <a href="https://www.wikipedia.org/" target="_blank" rel="noopener">Wikipedia</a>.
-      </small>
-    </footer>
-
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="app.js"></script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-
-
-
-
 
 
 

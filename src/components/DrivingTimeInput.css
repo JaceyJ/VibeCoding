@@ -1,0 +1,94 @@
+.driving-time-input-container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+}
+
+.driving-time-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  margin-bottom: 0.45rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.driving-time-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.driving-time-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1.5px solid var(--color-border);
+  background-color: rgba(30, 41, 59, 0.7);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--color-text);
+  flex-shrink: 0;
+}
+
+.driving-time-button:hover:not(:disabled) {
+  background-color: rgba(37, 99, 235, 0.25);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.driving-time-button:active:not(:disabled) {
+  background-color: rgba(37, 50, 78, 0.95);
+}
+
+.driving-time-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.driving-time-input-inner {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  background-color: rgba(16, 24, 40, 0.65);
+}
+
+.driving-time-input-inner:focus-within {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+  background-color: rgba(20, 31, 53, 0.95);
+}
+
+.driving-time-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text);
+  background: transparent;
+  text-align: center;
+  -moz-appearance: textfield;
+}
+
+.driving-time-input::-webkit-outer-spin-button,
+.driving-time-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.driving-time-unit {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  margin-left: 0.5rem;
+  white-space: nowrap;
+}
+
+

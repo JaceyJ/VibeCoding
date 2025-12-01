@@ -1,0 +1,127 @@
+.attraction-result {
+  background-color: rgba(15, 23, 42, 0.78);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
+  box-shadow: 0 12px 28px rgba(2, 6, 23, 0.45);
+}
+
+.attraction-result:hover {
+  border-color: #8b5cf6;
+  box-shadow: 0 20px 40px rgba(2, 6, 23, 0.65);
+  transform: translateY(-2px);
+}
+
+.attraction-result-header {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.attraction-rank {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  color: #f8fafc;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+  box-shadow: 0 12px 24px rgba(139, 92, 246, 0.45);
+}
+
+.attraction-info {
+  flex: 1;
+}
+
+.attraction-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 0.25rem 0;
+}
+
+.attraction-address {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  margin: 0;
+}
+
+.attraction-result-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.attraction-detail-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.attraction-detail-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.attraction-detail-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.attraction-description {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  margin: 0 0 0.75rem 0;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.attraction-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.attraction-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #c4b5fd;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.attraction-link:hover {
+  color: #a78bfa;
+  text-decoration: underline;
+}
+
+.trip-type-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background-color: rgba(167, 139, 250, 0.15);
+  color: #c4b5fd;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+  text-transform: capitalize;
+}
+

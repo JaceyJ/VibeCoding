@@ -1,0 +1,56 @@
+.trip-planning-form-container {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.trip-planning-form-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+.trip-planning-form {
+  background: linear-gradient(140deg, rgba(16, 24, 40, 0.95), rgba(14, 19, 35, 0.92));
+  border: 1px solid var(--color-border);
+  padding: 2.25rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(14px);
+}
+
+.advanced-settings-row {
+  margin-top: 0.85rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+.advanced-settings-link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-accent);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.advanced-settings-link:hover {
+  color: var(--color-accent-strong);
+  text-decoration: underline;
+}
+
+.advanced-settings-summary {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+}
+
+

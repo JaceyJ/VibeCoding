@@ -1,0 +1,33 @@
+.plan-trip-button {
+  width: 100%;
+  padding: 0.95rem 1.5rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #f8fafc;
+  background: linear-gradient(120deg, #2563eb, #7c3aed);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  margin-top: 1.25rem;
+  box-shadow: 0 15px 35px rgba(79, 70, 229, 0.55);
+}
+
+.plan-trip-button:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 20px 40px rgba(99, 102, 241, 0.55);
+}
+
+.plan-trip-button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 10px 20px rgba(79, 70, 229, 0.35);
+}
+
+.plan-trip-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+

@@ -136,3 +136,4 @@ export const HotelSearchModal: React.FC<HotelSearchModalProps> = ({
   );
 };
 
+

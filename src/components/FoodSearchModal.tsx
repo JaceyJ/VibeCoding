@@ -173,3 +173,4 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
   );
 };
 
+

@@ -1,93 +1,189 @@
 # Trip Planning App
 
-A modern, responsive trip planning application UI built with React and TypeScript, following SOLID design principles and Object-Oriented Design patterns.
+A modern, responsive trip planning application built with React, TypeScript, and Vite. Plan your road trips with automatic route calculation, overnight stop suggestions, attractions, food recommendations, and interactive maps.
 
 ## Features
 
-- **Start Location Input**: Text field for entering the trip's starting point
-- **End Location Input**: Text field for entering the trip's destination
-- **Minimum Daily Driving Time**: Numeric input with up/down arrows (0.5-24 hours)
-- **Maximum Daily Driving Time**: Numeric input with up/down arrows (0.5-24 hours)
-- **Plan Trip Button**: Submits the form when all fields are valid
+- **Trip Planning Form**: Enter start and end locations, set driving time preferences, and choose trip type (hotel or camping)
+- **Route Calculation**: Automatically calculates optimal routes with overnight stops based on your driving time preferences
+- **Interactive Map**: Visualize your route with Leaflet maps showing the path and overnight stops
+- **Attractions**: Discover nearby attractions along your route
+- **Food Recommendations**: Find restaurants and food places near your stops
+- **Lodging Options**: Search for hotels or campsites at each overnight stop
+- **Date Selection**: Choose your trip start date to plan accordingly
+- **Responsive Design**: Works on desktop and mobile devices
 
-## Architecture
+## Prerequisites
 
-The application follows SOLID principles:
+Before you begin, ensure you have the following installed:
 
-- **Single Responsibility**: Each component has one clear purpose
-  - `LocationInput`: Handles location text input
-  - `DrivingTimeInput`: Handles numeric driving time input with controls
-  - `PlanTripButton`: Renders the action button
-  - `TripPlanningForm`: Manages form state and composition
+- **Node.js** (version 16 or higher) - [Download Node.js](https://nodejs.org/)
+- **npm** (comes with Node.js) or **yarn**
 
-- **Open/Closed**: Components are extensible through props without modification
-
-- **Liskov Substitution**: Components can be replaced with compatible implementations
-
-- **Interface Segregation**: Focused prop interfaces for each component
-
-- **Dependency Inversion**: Components depend on abstractions (props) rather than concrete implementations
-
-## Project Structure
-
-```
-src/
-├── components/
-│   ├── LocationInput.tsx          # Location input component
-│   ├── LocationInput.css
-│   ├── DrivingTimeInput.tsx        # Driving time input with arrows
-│   ├── DrivingTimeInput.css
-│   ├── PlanTripButton.tsx          # Submit button component
-│   ├── PlanTripButton.css
-│   ├── TripPlanningForm.tsx        # Main form component
-│   └── TripPlanningForm.css
-├── App.tsx                          # Main app component
-├── App.css
-└── main.tsx                         # Application entry point
-```
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js (v16 or higher)
-- npm or yarn
-
-### Installation
-
-1. Install dependencies:
+To check if you have Node.js installed, run:
 ```bash
-npm install
+node --version
+npm --version
 ```
 
-2. Start the development server:
+## Installation
+
+1. **Clone or navigate to the project directory:**
+   ```bash
+   cd vib
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+   
+   This will install all required packages including React, TypeScript, Vite, Leaflet, and other dependencies.
+
+## Running the Application
+
+### Development Mode
+
+To start the development server:
+
 ```bash
 npm run dev
 ```
 
-3. Open your browser and navigate to the URL shown in the terminal (typically `http://localhost:5173`)
+The application will start and you'll see output like:
+```
+  VITE v4.x.x  ready in xxx ms
 
-### Build for Production
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+```
+
+3. **Open your browser** and navigate to the URL shown (typically `http://localhost:5173`)
+
+The development server includes:
+- Hot Module Replacement (HMR) - changes reflect immediately
+- Fast refresh for React components
+- Source maps for debugging
+
+### Production Build
+
+To build the application for production:
 
 ```bash
 npm run build
 ```
 
-The built files will be in the `dist` directory.
+This will:
+- Compile TypeScript
+- Bundle and optimize the code
+- Output production-ready files to the `dist/` directory
 
-## Usage
+### Preview Production Build
 
-1. Enter your starting location in the "Start Location" field
-2. Enter your destination in the "End Location" field
-3. Adjust the minimum and maximum daily driving time using the up/down arrows or by typing directly
-4. Click "Plan Trip" to submit (currently shows an alert - backend integration pending)
+To preview the production build locally:
 
-## Future Enhancements
+```bash
+npm run preview
+```
 
-- Backend API integration for trip planning
-- Route visualization
-- Multiple waypoints support
-- Trip history
-- Save and load trip configurations
+This serves the built files from the `dist/` directory.
 
+## Project Structure
 
+```
+vib/
+├── src/
+│   ├── components/          # React components
+│   │   ├── TripPlanningForm.tsx
+│   │   ├── RouteDisplay.tsx
+│   │   ├── RouteMap.tsx
+│   │   ├── OvernightStopsList.tsx
+│   │   ├── AttractionsTab.tsx
+│   │   ├── FoodSearchModal.tsx
+│   │   ├── HotelSearchModal.tsx
+│   │   └── ... (other components)
+│   ├── services/            # Business logic and API services
+│   │   ├── RouteService.ts
+│   │   ├── LocationService.ts
+│   │   ├── AttractionService.ts
+│   │   ├── FoodService.ts
+│   │   ├── HotelService.ts
+│   │   └── ... (other services)
+│   ├── utils/               # Utility functions
+│   ├── App.tsx              # Main app component
+│   └── main.tsx             # Application entry point
+├── docs/                    # Documentation
+├── index.html               # HTML template
+├── package.json             # Dependencies and scripts
+├── tsconfig.json            # TypeScript configuration
+├── vite.config.ts           # Vite configuration
+└── README.md                # This file
+```
+
+## Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+
+## Technology Stack
+
+- **React 18** - UI library
+- **TypeScript** - Type-safe JavaScript
+- **Vite** - Build tool and dev server
+- **Leaflet** - Interactive maps
+- **React Leaflet** - React bindings for Leaflet
+
+## API Usage
+
+This application uses:
+- **OpenStreetMap Nominatim API** - For location search and geocoding (no API key required)
+- **OpenRouteService API** - For route calculation (no API key required for basic usage)
+
+Note: These are free public APIs. For production use with high traffic, consider setting up your own API keys or using alternative services.
+
+## Troubleshooting
+
+### Port Already in Use
+
+If port 5173 is already in use, Vite will automatically try the next available port. You can also specify a port:
+
+```bash
+npm run dev -- --port 3000
+```
+
+### Dependencies Issues
+
+If you encounter issues with dependencies:
+
+```bash
+# Delete node_modules and package-lock.json
+rm -rf node_modules package-lock.json
+
+# Reinstall dependencies
+npm install
+```
+
+### TypeScript Errors
+
+If you see TypeScript errors, ensure your TypeScript version is compatible:
+
+```bash
+npm install typescript@latest --save-dev
+```
+
+## Browser Support
+
+This application works best in modern browsers:
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+
+## License
+
+This project is for educational/demonstration purposes.
+
+## Contributing
+
+This is a personal project. For questions or issues, please refer to the project documentation in the `docs/` directory.

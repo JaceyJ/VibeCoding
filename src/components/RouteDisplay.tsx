@@ -102,7 +102,8 @@ export const RouteDisplay: React.FC<RouteDisplayProps> = ({
               minDailyDrivingTime,
               maxDailyDrivingTime,
               progressCallback,
-              lodgingType
+              lodgingType,
+              startCoords
             );
             setOvernightStops(stops);
             setProgress({ current: 100, total: 100, message: 'Complete!' });

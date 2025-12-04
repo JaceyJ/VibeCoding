@@ -554,19 +554,41 @@ export class AttractionService {
    * Extract rating from result (if available)
    */
   private static extractRating(result: any): number | undefined {
-    // Try to extract from extratags
+    // Try to extract from extratags (primary source)
     if (result.extratags?.rating) {
       const rating = parseFloat(result.extratags.rating);
       if (!isNaN(rating) && rating >= 0 && rating <= 5) {
         return rating;
       }
     }
+
+    // Try to extract from other rating fields
+    if (result.rating) {
+      const rating = parseFloat(result.rating);
+      if (!isNaN(rating) && rating >= 0 && rating <= 5) {
+        return rating;
+      }
+    }
     
     // Estimate based on importance (Nominatim importance is 0-1, scale to 0-5)
+    // Use a better scaling approach that avoids very low ratings
     if (result.importance) {
       const importance = parseFloat(result.importance);
-      if (!isNaN(importance)) {
-        return importance * 5; // Scale 0-1 to 0-5
+      if (!isNaN(importance) && importance > 0) {
+        // Scale importance to rating more intelligently
+        // High importance (0.7-1.0) -> 4.0-4.5 stars
+        // Medium importance (0.4-0.7) -> 3.5-4.0 stars
+        // Low importance (0.1-0.4) -> 3.0-3.5 stars
+        // Very low importance (<0.1) -> 2.5-3.0 stars
+        if (importance >= 0.7) {
+          return 4.0 + (importance - 0.7) * 1.67; // 4.0 to 4.5
+        } else if (importance >= 0.4) {
+          return 3.5 + (importance - 0.4) * 1.67; // 3.5 to 4.0
+        } else if (importance >= 0.1) {
+          return 3.0 + (importance - 0.1) * 1.67; // 3.0 to 3.5
+        } else {
+          return 2.5 + importance * 5; // 2.5 to 3.0
+        }
       }
     }
     

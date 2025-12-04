@@ -5,7 +5,7 @@
  */
 
 import { RouteData, RoutePoint } from './RouteService';
-import { haversineDistance } from '../utils/GeographicUtils';
+import { haversineDistance, Point } from '../utils/GeographicUtils';
 import { findNearbyCities, City } from './CityService';
 
 export type LodgingType = 'hotel' | 'campsite';
@@ -213,6 +213,11 @@ function scoreCity(
  * @param idealCenter - Ideal center time in seconds
  * @param routeDistance - Total route distance in kilometers
  * @param routeDuration - Total route duration in seconds
+ * @param minDailyHours - Minimum daily driving time in hours
+ * @param maxDailyHours - Maximum daily driving time in hours
+ * @param previousStop - Previous overnight stop (null for day 1)
+ * @param startLocation - Starting location coordinates (to exclude from day 1)
+ * @param lodgingType - Lodging type preference
  * @param onProgress - Optional callback for progress updates
  * @returns Best overnight stop or null if none found
  */
@@ -224,6 +229,10 @@ async function findBestStopForDay(
   idealCenter: number,
   routeDistance: number,
   routeDuration: number,
+  minDailyHours: number,
+  maxDailyHours: number,
+  previousStop: OvernightStop | null,
+  startLocation: RoutePoint | null,
   lodgingType: LodgingType,
   onProgress?: ProgressCallback
 ): Promise<OvernightStop | null> {
@@ -285,6 +294,22 @@ async function findBestStopForDay(
       });
 
       for (const city of nearbyCities) {
+        // Skip if this city is too close to the starting location (for day 1)
+        if (day === 1 && startLocation) {
+          const distanceFromStart = haversineDistance(
+            { lat: startLocation.lat, lon: startLocation.lon },
+            { lat: city.lat, lon: city.lon }
+          );
+          const averageSpeedKmh = (routeDistance / routeDuration) * 3600;
+          const timeFromStart = (distanceFromStart / averageSpeedKmh) * 3600;
+          const minTimeFromStart = minDailyHours * 3600; // Convert to seconds
+          
+          if (timeFromStart < minTimeFromStart) {
+            console.log(`[OvernightStopService] Day ${day}: Skipping ${city.name} - too close to start (${(timeFromStart / 3600).toFixed(2)}h < ${minDailyHours}h)`);
+            continue;
+          }
+        }
+
         // Calculate detour time
         // Estimate detour as additional distance / average speed
         const averageSpeedKmh = (routeDistance / routeDuration) * 3600;
@@ -294,10 +319,43 @@ async function findBestStopForDay(
         // Estimate city arrival time (route time + detour time)
         const cityTime = routePoint.cumulativeTime + detourTime;
 
+        // Calculate actual driving time from previous stop (or start) to this city
+        let drivingTimeFromPrevious: number;
+        if (previousStop) {
+          // Calculate distance from previous stop to this city
+          const distanceFromPrevious = haversineDistance(
+            { lat: previousStop.city.lat, lon: previousStop.city.lon },
+            { lat: city.lat, lon: city.lon }
+          );
+          // Estimate driving time using average speed
+          drivingTimeFromPrevious = (distanceFromPrevious / averageSpeedKmh) * 3600;
+        } else {
+          // For day 1, calculate from start location
+          if (startLocation) {
+            const distanceFromStart = haversineDistance(
+              { lat: startLocation.lat, lon: startLocation.lon },
+              { lat: city.lat, lon: city.lon }
+            );
+            drivingTimeFromPrevious = (distanceFromStart / averageSpeedKmh) * 3600;
+          } else {
+            // Fallback: use cumulative time
+            drivingTimeFromPrevious = cityTime;
+          }
+        }
+
+        // Validate that driving time meets min/max constraints
+        const minTimeSec = minDailyHours * 3600;
+        const maxTimeSec = maxDailyHours * 3600;
+        
+        if (drivingTimeFromPrevious < minTimeSec || drivingTimeFromPrevious > maxTimeSec) {
+          console.log(`[OvernightStopService] Day ${day}: Skipping ${city.name} - driving time ${(drivingTimeFromPrevious / 3600).toFixed(2)}h not in range [${minDailyHours}h, ${maxDailyHours}h]`);
+          continue;
+        }
+
         // Score the city
         citiesScored++;
         const score = scoreCity(city, cityTime, idealCenter, detourTime, lodgingType);
-        console.log(`[OvernightStopService] Day ${day}: Scored ${city.name} (${city.placeType}, detour: ${city.distanceFromRoute.toFixed(1)}km) - Score: ${score.toFixed(2)}`);
+        console.log(`[OvernightStopService] Day ${day}: Scored ${city.name} (${city.placeType}, detour: ${city.distanceFromRoute.toFixed(1)}km, driving time: ${(drivingTimeFromPrevious / 3600).toFixed(2)}h) - Score: ${score.toFixed(2)}`);
 
         if (score > bestScore) {
           console.log(`[OvernightStopService] Day ${day}: New best stop! ${city.name} (previous best: ${bestScore.toFixed(2)})`);
@@ -352,6 +410,8 @@ export interface ProgressCallback {
  * @param minDailyHours - Minimum daily driving time in hours
  * @param maxDailyHours - Maximum daily driving time in hours
  * @param onProgress - Optional callback for progress updates
+ * @param lodgingType - Lodging type preference
+ * @param startLocation - Starting location coordinates (to exclude from stops)
  * @returns Promise with array of optimal overnight stops
  */
 export async function selectOvernightStops(
@@ -359,7 +419,8 @@ export async function selectOvernightStops(
   minDailyHours: number,
   maxDailyHours: number,
   onProgress?: ProgressCallback,
-  lodgingType: LodgingType = 'hotel'
+  lodgingType: LodgingType = 'hotel',
+  startLocation: RoutePoint | null = null
 ): Promise<OvernightStop[]> {
   console.log('[OvernightStopService] Starting overnight stop calculation...');
   console.log(`[OvernightStopService] Route: ${route.distance.toFixed(1)} km, ${(route.duration / 3600).toFixed(1)} hours`);
@@ -409,6 +470,7 @@ export async function selectOvernightStops(
     console.log(`[OvernightStopService] Day ${day}: Ideal window ${(idealMin / 3600).toFixed(1)}h - ${(idealMax / 3600).toFixed(1)}h (center: ${(idealCenter / 3600).toFixed(1)}h)`);
 
     // Find best stop for this day
+    const previousStop = stops.length > 0 ? stops[stops.length - 1] : null;
     const stop = await findBestStopForDay(
       day,
       routePoints,
@@ -417,6 +479,10 @@ export async function selectOvernightStops(
       idealCenter,
       route.distance,
       route.duration,
+      minDailyHours,
+      maxDailyHours,
+      previousStop,
+      startLocation,
       lodgingType,
       (subProgress) => {
         const totalProgress = dayProgress + (subProgress.current * progressPerDay / 100);

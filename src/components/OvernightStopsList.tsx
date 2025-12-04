@@ -46,6 +46,7 @@ export const OvernightStopsList: React.FC<OvernightStopsListProps> = ({
   const [currentFoodStopDay, setCurrentFoodStopDay] = useState<number | null>(null);
   const [foodResults, setFoodResults] = useState<Map<number, FoodPlace[]>>(new Map());
   const [isSearchingFood, setIsSearchingFood] = useState<Map<number, boolean>>(new Map());
+  const [foodSearchParams, setFoodSearchParams] = useState<Map<number, FoodSearchParams>>(new Map());
   
   // Attraction search state
   const [attractionResults, setAttractionResults] = useState<Map<number, Attraction[]>>(new Map());
@@ -196,6 +197,13 @@ export const OvernightStopsList: React.FC<OvernightStopsListProps> = ({
     }
 
     console.log(`[OvernightStopsList] Starting food search for day ${currentFoodStopDay}`, params);
+
+    // Store search params for this stop
+    setFoodSearchParams(prev => {
+      const newMap = new Map(prev);
+      newMap.set(currentFoodStopDay, params);
+      return newMap;
+    });
 
     setIsSearchingFood(prev => {
       const newMap = new Map(prev);
@@ -414,13 +422,17 @@ export const OvernightStopsList: React.FC<OvernightStopsListProps> = ({
                                   )}
                                 </p>
                               </div>
-                              {foodResults.get(stop.day)!.map((foodPlace, index) => (
-                                <FoodResult 
-                                  key={`${foodPlace.lat}-${foodPlace.lon}-${index}`} 
-                                  foodPlace={foodPlace} 
-                                  index={index}
-                                />
-                              ))}
+                              {foodResults.get(stop.day)!.map((foodPlace, index) => {
+                                const searchParams = foodSearchParams.get(stop.day);
+                                return (
+                                  <FoodResult 
+                                    key={`${foodPlace.lat}-${foodPlace.lon}-${index}`} 
+                                    foodPlace={foodPlace} 
+                                    index={index}
+                                    selectedPriceLevel={searchParams?.priceLevel}
+                                  />
+                                );
+                              })}
                             </div>
                           ) : (
                             <p className="category-placeholder">

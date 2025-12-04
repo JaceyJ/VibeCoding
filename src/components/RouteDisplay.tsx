@@ -8,6 +8,7 @@ import { AttractionsTab } from './AttractionsTab';
 import { Tabs } from './Tabs';
 import { ProgressBar } from './ProgressBar';
 import { TripType } from './TripTypeSelector';
+import { useLoadingMessage } from '../hooks/useLoadingMessage';
 import './RouteDisplay.css';
 
 interface RouteDisplayProps {
@@ -44,6 +45,7 @@ export const RouteDisplay: React.FC<RouteDisplayProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [isSearchingRouteAttractions, setIsSearchingRouteAttractions] = useState(false);
   const [routeAttractions, setRouteAttractions] = useState<DayAttractionResult[]>([]);
+  const loadingMessage = useLoadingMessage(isLoading);
 
   useEffect(() => {
     const fetchRoute = async () => {
@@ -88,9 +90,18 @@ export const RouteDisplay: React.FC<RouteDisplayProps> = ({
           setIsCalculatingStops(true);
           setProgress({ current: 0, total: 100, message: 'Starting overnight stop calculation...' });
           
+          // Track maximum progress to prevent backward jumps
+          let maxProgressSeen = 0;
           const progressCallback: ProgressCallback = (progressUpdate) => {
+            // Ensure progress only goes forward (never backward)
+            // Reset if we're starting fresh (progress is 0)
+            if (progressUpdate.current === 0) {
+              maxProgressSeen = 0;
+            }
+            const newProgress = Math.max(maxProgressSeen, progressUpdate.current);
+            maxProgressSeen = newProgress;
             setProgress({
-              current: progressUpdate.current,
+              current: newProgress,
               total: progressUpdate.total,
               message: progressUpdate.message
             });
@@ -169,7 +180,7 @@ export const RouteDisplay: React.FC<RouteDisplayProps> = ({
         {isLoading && (
           <div className="route-display-loading">
             <div className="route-display-spinner"></div>
-            <p>Loading route...</p>
+            <p>{loadingMessage}</p>
           </div>
         )}
         {error && (

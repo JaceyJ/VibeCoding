@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import { RoutePoint, RouteData } from '../services/RouteService';
 import { OvernightStop } from '../services/OvernightStopService';
+import { useLoadingMessage } from '../hooks/useLoadingMessage';
 import './RouteMap.css';
 
 // Fix for default marker icons in Leaflet with Vite
@@ -49,6 +50,7 @@ export const RouteMap: React.FC<RouteMapProps> = ({
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const markersRef = useRef<L.Layer[]>([]);
   const routeLayerRef = useRef<L.Polyline | null>(null);
+  const loadingMessage = useLoadingMessage(isLoading);
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
@@ -187,7 +189,7 @@ export const RouteMap: React.FC<RouteMapProps> = ({
       {isLoading && (
         <div className="route-map-loading">
           <div className="route-map-spinner"></div>
-          <p>Calculating route...</p>
+          <p>{loadingMessage}</p>
         </div>
       )}
       <div ref={mapContainerRef} className="route-map" />

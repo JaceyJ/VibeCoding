@@ -5,21 +5,24 @@ import './FoodResult.css';
 interface FoodResultProps {
   foodPlace: FoodPlace;
   index: number;
+  selectedPriceLevel?: 1 | 2 | 3 | 4; // User's selected price level from search
 }
 
 /**
  * FoodResult Component
  * Single Responsibility: Displays a single food place search result
  */
-export const FoodResult: React.FC<FoodResultProps> = ({ foodPlace, index }) => {
+export const FoodResult: React.FC<FoodResultProps> = ({ foodPlace, index, selectedPriceLevel }) => {
   const formatDistance = (km: number): string => {
     const miles = km * 0.621371;
     return `${miles.toFixed(1)} mi`;
   };
 
-  const renderPriceLevel = (level?: number): string => {
-    if (!level) return 'N/A';
-    return '$'.repeat(level);
+  const renderPriceLevel = (level?: number, userSelected?: number): string => {
+    // If restaurant has a price level, use it; otherwise use user's selected price level
+    const displayLevel = level || userSelected;
+    if (!displayLevel) return 'N/A';
+    return '$'.repeat(displayLevel);
   };
 
   const getVenueTypeLabel = (type: string): string => {
@@ -49,7 +52,7 @@ export const FoodResult: React.FC<FoodResultProps> = ({ foodPlace, index }) => {
         </div>
         <div className="food-detail-item">
           <span className="food-detail-label">Price:</span>
-          <span className="food-detail-value">{renderPriceLevel(foodPlace.priceLevel)}</span>
+          <span className="food-detail-value">{renderPriceLevel(foodPlace.priceLevel, selectedPriceLevel)}</span>
         </div>
         {foodPlace.cuisine && (
           <div className="food-detail-item">

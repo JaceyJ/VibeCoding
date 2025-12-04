@@ -41,12 +41,6 @@ export const AttractionResult: React.FC<AttractionResultProps> = ({ attraction, 
             <span className="attraction-detail-value">{attraction.category}</span>
           </div>
         )}
-        {attraction.rating && (
-          <div className="attraction-detail-item">
-            <span className="attraction-detail-label">Rating:</span>
-            <span className="attraction-detail-value">{attraction.rating.toFixed(1)} ⭐</span>
-          </div>
-        )}
         <div className="attraction-detail-item">
           <span className="attraction-detail-label">Distance:</span>
           <span className="attraction-detail-value">{formatDistance(attraction.distance)}</span>

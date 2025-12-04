@@ -75,11 +75,6 @@ export const AttractionsTab: React.FC<AttractionsTabProps> = ({
                             <span>
                               ~{attraction.distance.toFixed(1)} km from route
                             </span>
-                            {attraction.rating && (
-                              <span className="attractions-day-item-rating">
-                                • {attraction.rating.toFixed(1)} ⭐
-                              </span>
-                            )}
                           </div>
                         </a>
                       ) : (

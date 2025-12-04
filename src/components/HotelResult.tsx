@@ -18,11 +18,6 @@ export const HotelResult: React.FC<HotelResultProps> = ({ hotel, index, numberOf
     return `${miles.toFixed(1)} mi`;
   };
 
-  const renderPriceLevel = (level?: number): string => {
-    if (!level) return 'N/A';
-    return '$'.repeat(level);
-  };
-
   const formatPriceRange = (range?: { min: number; max: number; currency: string }): string => {
     if (!range) return 'Price not available';
     const perNight = numberOfDays > 1 ? ' per night' : '';
@@ -39,20 +34,10 @@ export const HotelResult: React.FC<HotelResultProps> = ({ hotel, index, numberOf
         </div>
       </div>
       <div className="hotel-result-details">
-        <div className="hotel-detail-item">
-          <span className="hotel-detail-label">Price Level:</span>
-          <span className="hotel-detail-value">{renderPriceLevel(hotel.priceLevel)}</span>
-        </div>
         {hotel.estimatedPriceRange && (
           <div className="hotel-detail-item hotel-price-range">
-            <span className="hotel-detail-label">Estimated Price:</span>
+            <span className="hotel-detail-label">Price:</span>
             <span className="hotel-detail-value hotel-price">{formatPriceRange(hotel.estimatedPriceRange)}</span>
-          </div>
-        )}
-        {hotel.rating && (
-          <div className="hotel-detail-item">
-            <span className="hotel-detail-label">Rating:</span>
-            <span className="hotel-detail-value">{hotel.rating.toFixed(1)} ⭐</span>
           </div>
         )}
         <div className="hotel-detail-item">

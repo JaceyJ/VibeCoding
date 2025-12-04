@@ -57,12 +57,6 @@ export const FoodResult: React.FC<FoodResultProps> = ({ foodPlace, index }) => {
             <span className="food-detail-value">{foodPlace.cuisine.charAt(0).toUpperCase() + foodPlace.cuisine.slice(1)}</span>
           </div>
         )}
-        {foodPlace.rating && (
-          <div className="food-detail-item">
-            <span className="food-detail-label">Rating:</span>
-            <span className="food-detail-value">{foodPlace.rating.toFixed(1)} ⭐</span>
-          </div>
-        )}
         <div className="food-detail-item">
           <span className="food-detail-label">Distance:</span>
           <span className="food-detail-value">{formatDistance(foodPlace.distance)}</span>

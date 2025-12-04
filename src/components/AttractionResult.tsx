@@ -71,3 +71,4 @@ export const AttractionResult: React.FC<AttractionResultProps> = ({ attraction, 
   );
 };
 
+

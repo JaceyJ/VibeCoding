@@ -84,3 +84,4 @@ export const FoodResult: React.FC<FoodResultProps> = ({ foodPlace, index }) => {
   );
 };
 
+

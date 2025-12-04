@@ -21,6 +21,7 @@ export interface FoodPlace {
   distance: number; // in kilometers
   url?: string;
   score: number;
+  rating?: number; // Rating from 0-5 stars
 }
 
 /**
@@ -273,6 +274,7 @@ export class FoodService {
           
           const venueType = this.determineVenueType(result, foodName);
           const priceLevel = this.extractPriceLevel(result);
+          const rating = this.extractRating(result);
           
           const foodPlace: FoodPlace = {
             name: foodName,
@@ -284,7 +286,8 @@ export class FoodService {
             cuisine: this.extractCuisine(result),
             distance: distance,
             url: this.generateFoodUrl({ name: foodName, lat: foodPoint.lat, lon: foodPoint.lon }),
-            score: 0 // Will be calculated
+            score: 0, // Will be calculated
+            rating: rating
           };
 
           // Score the food place
@@ -421,6 +424,51 @@ export class FoodService {
       }
     }
 
+    return undefined;
+  }
+
+  /**
+   * Extract rating from result (if available)
+   */
+  private static extractRating(result: any): number | undefined {
+    // Try to extract from extratags (Nominatim sometimes has this)
+    if (result.extratags?.rating) {
+      const rating = parseFloat(result.extratags.rating);
+      if (!isNaN(rating) && rating >= 0 && rating <= 5) {
+        return rating;
+      }
+    }
+
+    // Try to extract from other rating fields
+    if (result.rating) {
+      const rating = parseFloat(result.rating);
+      if (!isNaN(rating) && rating >= 0 && rating <= 5) {
+        return rating;
+      }
+    }
+
+    // Estimate based on importance (Nominatim importance is 0-1, scale to 0-5)
+    // But only use this as a last resort and scale it appropriately
+    if (result.importance) {
+      const importance = parseFloat(result.importance);
+      if (!isNaN(importance) && importance > 0) {
+        // Scale importance to rating, but be conservative
+        // High importance (0.7-1.0) -> 4.0-4.5 stars
+        // Medium importance (0.4-0.7) -> 3.5-4.0 stars
+        // Low importance (0.1-0.4) -> 3.0-3.5 stars
+        // Very low importance (<0.1) -> 2.5-3.0 stars
+        if (importance >= 0.7) {
+          return 4.0 + (importance - 0.7) * 1.67; // 4.0 to 4.5
+        } else if (importance >= 0.4) {
+          return 3.5 + (importance - 0.4) * 1.67; // 3.5 to 4.0
+        } else if (importance >= 0.1) {
+          return 3.0 + (importance - 0.1) * 1.67; // 3.0 to 3.5
+        } else {
+          return 2.5 + importance * 5; // 2.5 to 3.0
+        }
+      }
+    }
+    
     return undefined;
   }
 
